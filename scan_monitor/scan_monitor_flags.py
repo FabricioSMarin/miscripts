@@ -2,10 +2,17 @@
 """
 Flag-event detectors for the EPICS scan monitor.
 
-Each function is a placeholder for future callback logic that evaluates PV
-combinations. Functions return True when the corresponding fault condition is
-detected. The monitor calls them on a polling interval and logs flag-event PVs
-when a function returns True.
+Each function evaluates a combination of PV values and returns True when the
+corresponding fault condition is detected. This is where multi-PV logic lives:
+the JSON config cannot express "fault when PV_a and PV_b disagree", so instead
+the config lists each flag's input PVs and the monitor passes their current
+values here as ``context`` (a dict keyed by the labels in the config).
+
+``context`` keys for each flag match the ``inputs`` labels in
+scan_monitor_config.json. ``beam_dump`` below is a worked example; the others
+are stubs documenting their expected inputs until the calculations are filled
+in. The monitor calls these on a polling interval and logs the flag_events PV
+snapshot whenever a function returns True.
 """
 
 from __future__ import annotations
@@ -30,22 +37,36 @@ RED_FLAGS = frozenset(
 
 
 def struck_miss_trigger(context: Optional[dict[str, Any]] = None) -> bool:
-    """Struck detector missed an expected trigger."""
+    """Struck 3820 still acquiring and missing triggers after stage motion done.
+
+    context inputs: acquiring, nuse_all, current_channel, requested_position,
+    actual_position.
+    """
     return False
 
 
 def struck_stuck_acquiring(context: Optional[dict[str, Any]] = None) -> bool:
-    """Struck detector stuck in acquiring state."""
+    """Struck 3820 stuck acquiring after receiving all triggers.
+
+    context inputs: acquiring, nuse_all, current_channel, scan_busy.
+    """
     return False
 
 
 def xspress3_miss_trigger(context: Optional[dict[str, Any]] = None) -> bool:
-    """Xspress3 missed an expected acquisition trigger."""
+    """Xspress3 missed an expected acquisition trigger.
+
+    context inputs: number_of_images, array_counter, detector_state,
+    trigger_mode.
+    """
     return False
 
 
 def xspress3_lost_frame(context: Optional[dict[str, Any]] = None) -> bool:
-    """Xspress3 dropped or failed to deliver a frame."""
+    """Xspress3 saved-frame count differs from received triggers while capturing.
+
+    context inputs: number_of_images, array_counter, capture, num_captured.
+    """
     return False
 
 
@@ -55,8 +76,25 @@ def filename_not_insync(context: Optional[dict[str, Any]] = None) -> bool:
 
 
 def beam_dump(context: Optional[dict[str, Any]] = None) -> bool:
-    """Beam dump or beam-off condition detected."""
-    return False
+    """Beam dump or beam-off condition detected.
+
+    Worked example of a combination check. context inputs:
+      - actual_mode:   S:ActualMode (4 == user/top-up operations)
+      - beam_current:  S:SRcurrentAI (mA)
+
+    Fires when the ring leaves operations mode or the stored current collapses.
+    """
+    if not context:
+        return False
+    actual_mode = context.get("actual_mode")
+    beam_current = context.get("beam_current")
+
+    mode_lost = actual_mode is not None and int(actual_mode) != 4
+    try:
+        current_lost = beam_current is not None and float(beam_current) < 2.0
+    except (TypeError, ValueError):
+        current_lost = False
+    return mode_lost or current_lost
 
 
 def ioc_is_down(context: Optional[dict[str, Any]] = None) -> bool:
@@ -75,7 +113,10 @@ def scan_paused(context: Optional[dict[str, Any]] = None) -> bool:
 
 
 def stage_stuck(context: Optional[dict[str, Any]] = None) -> bool:
-    """Sample stage motor stuck while scan expects motion."""
+    """Sample stage motor not advancing while the scan expects motion.
+
+    context inputs: requested_position, actual_position, velocity, scan_busy.
+    """
     return False
 
 

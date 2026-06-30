@@ -2,10 +2,13 @@
 """
 Monitor EPICS scan orchestration and log PV snapshots for each 2D scan.
 
-Reads PV definitions from a JSON config with three sections:
+Reads PV definitions from a JSON config with these sections:
   - scan_started: PVs whose state change marks the start of a 2D scan
   - scan_parameters: PVs logged once per scan at scan start
-  - flag_events: PVs logged when a flag function fires
+  - flags: per-flag input PVs; read each poll and passed as the context
+    dict to the matching function in scan_monitor_flags.py, which applies
+    the multi-PV calculation and returns True on a fault
+  - flag_events: diagnostic-snapshot PVs logged when any flag fires
 
 Outputs (written to output_dir from config):
   - scan_monitor.log          session text log
@@ -220,12 +223,32 @@ class ScanMonitor:
         )
         self.write_outputs()
 
-    def evaluate_flags(self, context: dict[str, Any] | None = None) -> None:
+    def evaluate_flags(self) -> None:
+        """Poll each configured flag.
+
+        For every flag listed in the config's ``flags`` section, its ``inputs``
+        PVs are read and passed as the ``context`` dict (keyed by label) to the
+        matching function in ``scan_monitor_flags.py``. The function applies the
+        multi-PV calculation and returns True when the fault condition is met.
+        """
         now = time.time()
-        for flag_name, check in FLAG_FUNCTIONS.items():
+        flag_specs = self.config.get("flags", {})
+        for flag_name, spec in flag_specs.items():
+            check = FLAG_FUNCTIONS.get(flag_name)
+            if check is None:
+                self.logger.warning("no flag function defined for %r; skipping", flag_name)
+                continue
+
             last = self._last_flag_fire.get(flag_name, 0.0)
             if now - last < self.flag_cooldown_s:
                 continue
+
+            try:
+                context = read_labeled_pvs(spec.get("inputs", []))
+            except RuntimeError as exc:
+                self.logger.warning("could not read inputs for %s: %s", flag_name, exc)
+                continue
+
             try:
                 fired = check(context)
             except Exception as exc:
@@ -233,6 +256,7 @@ class ScanMonitor:
                 continue
             if not fired:
                 continue
+
             self._last_flag_fire[flag_name] = now
             flag_values = read_labeled_pvs(self.config["flag_events"])
             self.on_flag_event(flag_name, flag_values)
@@ -342,6 +366,9 @@ class ScanMonitor:
         pvs = {rule["pv"] for rule in self.config["scan_started"]}
         for entry in self.config["scan_parameters"]:
             pvs.add(entry["pv"])
+        for spec in self.config.get("flags", {}).values():
+            for entry in spec.get("inputs", []):
+                pvs.add(entry["pv"])
         for entry in self.config["flag_events"]:
             pvs.add(entry["pv"])
         pvs.add(self.scan_number_pv)
@@ -377,18 +404,37 @@ class ScanMonitor:
 
 
 def run_demo(output_dir: Path) -> None:
-    """Simulate a short session to validate logging and plots without EPICS."""
+    """Simulate a short session to validate logging and plots without EPICS.
+
+    The PV names, labels, and flag names mirror scan_monitor_config.json (8-BM
+    Fscan / Struck 3820 / Xspress3 setup) so the demo outputs match what a live
+    session would produce.
+    """
     config = {
-        "scan_number_pv": "SCAN:NN",
-        "scan_started": [{"pv": "SCAN:EXSC", "when": "eq", "value": 1}],
+        "scan_number_pv": "8bmbsft:saveData_scanNumber",
+        "scan_started": [{"pv": "8bmbsft:Fscan1.BUSY", "when": "eq", "value": 1}],
         "scan_parameters": [
-            {"label": "scan_number", "pv": "SCAN:NN"},
-            {"label": "npts", "pv": "SCAN:NPTS"},
-            {"label": "sample_x", "pv": "SAMPLE_X.RBV"},
+            {"label": "scan_number", "pv": "8bmbsft:saveData_scanNumber"},
+            {"label": "Xnpts", "pv": "8bmbsft:FscanH.NPTS"},
+            {"label": "Ynpts", "pv": "8bmbsft:FscanH.NPTS"},
+            {"label": "Xstart", "pv": "8bmbsft:FscanH.P1SP"},
+            {"label": "Xend", "pv": "8bmbsft:FscanH.P1EP"},
+            {"label": "Xstep", "pv": "8bmbsft:FscanH.P1SI"},
+            {"label": "Xcenter", "pv": "8bmbsft:FscanH.P1CP"},
+            {"label": "Ystart", "pv": "8bmbsft:FscanH.P2SP"},
+            {"label": "Yend", "pv": "8bmbsft:FscanH.P2EP"},
+            {"label": "Ystep", "pv": "8bmbsft:FscanH.P2SI"},
+            {"label": "Ycenter", "pv": "8bmbsft:FscanH.P2CP"},
+            {"label": "saveData_message", "pv": "8bmbsft:saveData_message"},
         ],
         "flag_events": [
-            {"label": "scan_busy", "pv": "SCAN:BUSY"},
-            {"label": "beam_current", "pv": "BEAM:Current"},
+            {"label": "beam_current", "pv": "S:SRcurrentAI"},
+            {"label": "acquiring", "pv": "8bmbsft:3820.Acquiring"},
+            {"label": "nuse_all", "pv": "8bmbsft:3820.NuseAll"},
+            {"label": "current_channel", "pv": "8bmbsft:3820.CurrentChannel"},
+            {"label": "array_counter", "pv": "8bmbXP3:det1:ArrayCounter_RBV"},
+            {"label": "detector_state", "pv": "8bmbXP3:det1:DetectorState_RBV"},
+            {"label": "actual_position", "pv": "8bmbsft:m27.RBV"},
         ],
     }
     monitor = ScanMonitor(config, output_dir)
@@ -398,6 +444,7 @@ def run_demo(output_dir: Path) -> None:
     for i, scan_num in enumerate([101, 102, 103], start=1):
         ts = base + i * 30
         iso = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat(timespec="milliseconds")
+        center = round(-0.5 + 0.5 * (i - 1), 3)
         monitor.scans.append(
             ScanRecord(
                 timestamp=ts,
@@ -405,8 +452,17 @@ def run_demo(output_dir: Path) -> None:
                 scan_number=str(scan_num),
                 parameters={
                     "scan_number": scan_num,
-                    "npts": 50 * i,
-                    "sample_x": 1.5 * i,
+                    "Xnpts": 101,
+                    "Ynpts": 51,
+                    "Xstart": round(center - 0.5, 3),
+                    "Xend": round(center + 0.5, 3),
+                    "Xstep": 0.01,
+                    "Xcenter": center,
+                    "Ystart": round(center - 0.25, 3),
+                    "Yend": round(center + 0.25, 3),
+                    "Ystep": 0.01,
+                    "Ycenter": center,
+                    "saveData_message": "scan complete",
                 },
             )
         )
@@ -421,12 +477,52 @@ def run_demo(output_dir: Path) -> None:
             )
         )
 
+    # (offset_s, flag_name, color, fault-snapshot values logged for the event)
     demo_flags = [
-        (base + 45, "beam_dump", "orange"),
-        (base + 75, "xspress3_lost_frame", "red"),
-        (base + 95, "scan_aborted", "orange"),
+        (
+            base + 45,
+            "beam_dump",
+            "orange",
+            {
+                "beam_current": 0.03,
+                "acquiring": 1,
+                "nuse_all": 5151,
+                "current_channel": 2287,
+                "array_counter": 2287,
+                "detector_state": "Acquire",
+                "actual_position": 0.118,
+            },
+        ),
+        (
+            base + 75,
+            "struck_stuck_acquiring",
+            "red",
+            {
+                "beam_current": 102.4,
+                "acquiring": 1,
+                "nuse_all": 5151,
+                "current_channel": 5151,
+                "array_counter": 5151,
+                "detector_state": "Acquire",
+                "actual_position": 0.5,
+            },
+        ),
+        (
+            base + 95,
+            "stage_stuck",
+            "red",
+            {
+                "beam_current": 102.3,
+                "acquiring": 1,
+                "nuse_all": 3060,
+                "current_channel": 3060,
+                "array_counter": 3060,
+                "detector_state": "Acquire",
+                "actual_position": 0.201,
+            },
+        ),
     ]
-    for ts, name, color in demo_flags:
+    for ts, name, color, values in demo_flags:
         iso = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat(timespec="milliseconds")
         monitor.timeline.append(
             TimelineEvent(
@@ -436,7 +532,7 @@ def run_demo(output_dir: Path) -> None:
                 label=name,
                 color=color,
                 scan_number="102",
-                details={"beam_current": 0.0},
+                details=values,
             )
         )
         with monitor.flag_events_path.open("a", encoding="utf-8") as f:
@@ -447,7 +543,7 @@ def run_demo(output_dir: Path) -> None:
                         "iso_time": iso,
                         "flag": name,
                         "scan_number": "102",
-                        "values": {"beam_current": 0.0},
+                        "values": values,
                     }
                 )
                 + "\n"

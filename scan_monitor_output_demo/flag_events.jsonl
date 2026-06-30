@@ -1,6 +1,0 @@
-{"timestamp": 1782585669.316813, "iso_time": "2026-06-27T18:41:09.316+00:00", "flag": "beam_dump", "scan_number": "102", "values": {"beam_current": 0.0}}
-{"timestamp": 1782585699.316813, "iso_time": "2026-06-27T18:41:39.316+00:00", "flag": "xspress3_lost_frame", "scan_number": "102", "values": {"beam_current": 0.0}}
-{"timestamp": 1782585719.316813, "iso_time": "2026-06-27T18:41:59.316+00:00", "flag": "scan_aborted", "scan_number": "102", "values": {"beam_current": 0.0}}
-{"timestamp": 1782585735.983675, "iso_time": "2026-06-27T18:42:15.983+00:00", "flag": "beam_dump", "scan_number": "102", "values": {"beam_current": 0.0}}
-{"timestamp": 1782585765.983675, "iso_time": "2026-06-27T18:42:45.983+00:00", "flag": "xspress3_lost_frame", "scan_number": "102", "values": {"beam_current": 0.0}}
-{"timestamp": 1782585785.983675, "iso_time": "2026-06-27T18:43:05.983+00:00", "flag": "scan_aborted", "scan_number": "102", "values": {"beam_current": 0.0}}
