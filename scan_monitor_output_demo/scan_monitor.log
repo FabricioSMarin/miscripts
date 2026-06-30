@@ -1,0 +1,3 @@
+2026-06-27 13:40:24,316 INFO demo mode (no EPICS)
+2026-06-27 13:41:30,983 INFO demo mode (no EPICS)
+2026-06-27 13:41:31,544 INFO demo outputs written: scan_monitor_output_demo/scans.csv, scan_monitor_output_demo/spreadsheet_view.png, scan_monitor_output_demo/event_time_plot.png

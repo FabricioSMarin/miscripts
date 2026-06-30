@@ -1,0 +1,2 @@
+# For ids3010_plotter.py — IDS3010 live plot / acquire / export
+matplotlib>=3.7

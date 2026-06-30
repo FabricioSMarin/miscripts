@@ -1,0 +1,2 @@
+# For keithley2400_moxa.py
+pyserial>=3.5

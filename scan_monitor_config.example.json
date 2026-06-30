@@ -1,0 +1,71 @@
+{
+  "output_dir_pv": "8bmbsft:saveData_fileSystem",
+  "scan_number_pv": "8bmbsft:saveData_scanNumber",
+  "scan_started": [
+    {
+      "pv": "8bmbsft:Fscan1.EXSC",
+      "when": "eq",
+      "value": 1,
+      "comment": "Execute-scan goes active at the start of a 2D scan"
+    }
+  ],
+  "scan_parameters": [
+    {"label": "scan_number", "pv": "8bmbsft:saveData_scanNumber"},
+    {"label": "Xnpts", "pv": "8bmbsft:FscanH.NPTS"},
+    {"label": "Ynpts", "pv": "8bmbsft:FscanH.NPTS"},
+    {"label": "Xstart", "pv": "8bmbsft:FscanH.P1SP"},
+    {"label": "Xend", "pv": "8bmbsft:FscanH.P1EP"},
+    {"label": "Xstep", "pv": "8bmbsft:FscanH.P1SI"},
+    {"label": "Xwidth", "pv": "8bmbsft:FscanH.P1WD"},
+    {"label": "Xcenter", "pv": "8bmbsft:FscanH.P1CP"},
+    {"label": "Ystart", "pv": "8bmbsft:FscanH.P2SP"},
+    {"label": "Yend", "pv": "8bmbsft:FscanH.P2EP"},
+    {"label": "Ystep", "pv": "8bmbsft:FscanH.P2SI"},
+    {"label": "Ywidth", "pv": "8bmbsft:FscanH.P2WD"},
+    {"label": "Ycenter", "pv": "8bmbsft:FscanH.P2CP"},
+    {"label": "saveData_message", "pv": "8bmbsft:saveData_message"}
+  ],
+  "flag_events": [
+    {"label": "scan_execute", "pv": "8bmbsft:Fscan1.EXSC"},
+    {"label": "acquiring", "pv": "8bmbsft:3820.Acquiring"},
+    {"label": "elapsed_real", "pv": "8bmbsft:3820.ElapsedReal"},
+    {"label": "nuse_all", "pv": "8bmbsft:3820.NuseAll"},
+    {"label": "current_channel", "pv": "8bmbsft:3820.CurrentChannel"},
+    {"label": "number_of_images", "pv": "8bmbXP3:det1:NumImages_RBV"},
+    {"label": "array_counter", "pv": "8bmbXP3:det1:ArrayCounter_RBV"},
+    {"label": "detector_state", "pv": "8bmbXP3:det1:DetectorState_RBV"},
+    {"label": "trigger_mode", "pv": "8bmbXP3:det1:TriggerMode_RBV"},
+    {"label": "capture", "pv": "8bmbXP3:HDF1:Capture_RBV"},
+    {"label": "full_file_name", "pv": "8bmbXP3:HDF1:FullFileName_RBV"},
+    {"label": "file_path_exists", "pv": "8bmbXP3:HDF1:FilePathExists_RBV"},
+    {"label": "array_rate", "pv": "8bmbXP3:det1:ArrayRate_RBV"},
+    {"label": "file_path", "pv": "8bmbXP3:HDF1:FilePath"},
+    {"label": "file_name", "pv": "8bmbXP3:HDF1:FileName"},
+    {"label": "file_number", "pv": "8bmbXP3:HDF1:FileNumber"},
+    {"label": "number_of_images", "pv": "8bmbXP3:det1:NumImages"},
+    {"label": "trigger_mode", "pv": "8bmbXP3:det1:TriggerMode"},
+    {"label": "requested_position", "pv": "8bmbsft:m27.VAL"},
+    {"label": "actual_position", "pv": "8bmbsft:m27.RBV"},
+    {"label": "velocity", "pv": "8bmbsft:m27.VELO"},
+    {"label": "vmax", "pv": "8bmbsft:m27.VMAX"},
+
+    {"label": "scan_busy", "pv": "SCAN:BUSY"},
+    {"label": "struck_acquire", "pv": "STRUCK:Acquire"},
+    {"label": "struck_trigger_count", "pv": "STRUCK:TriggerCount"},
+    {"label": "xspress3_acquire", "pv": "XSPRESS3:Acquire"},
+    {"label": "xspress3_num_captured", "pv": "XSPRESS3:NumCaptured"},
+    {"label": "stage_x_moving", "pv": "SAMPLE_X.MOVN"},
+    {"label": "stage_y_moving", "pv": "SAMPLE_Y.MOVN"},
+    {"label": "beam_current", "pv": "BEAM:Current"}
+  ]
+}
+
+
+
+
+
+
+
+
+
+

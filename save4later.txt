@@ -1,0 +1,5 @@
+8bmbXP3:det1:Acquire
+8bmbXP3:HDF1:Capture
+8bmb:3820:EraseStart
+
+8bmbsft:FscanH.EXSC
