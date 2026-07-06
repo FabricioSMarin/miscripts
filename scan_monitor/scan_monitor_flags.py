@@ -8,15 +8,15 @@ the JSON config cannot express "fault when PV_a and PV_b disagree", so instead
 the config lists each flag's input PVs and the monitor passes their current
 values here as ``context`` (a dict keyed by the labels in the config).
 
-``context`` keys for each flag match the ``inputs`` labels in
-scan_monitor_config.json. ``beam_dump`` below is a worked example; the others
-are stubs documenting their expected inputs until the calculations are filled
-in. The monitor calls these on a polling interval and logs the flag_events PV
-snapshot whenever a function returns True.
+``context`` keys are defined only in scan_monitor_config.json under each flag's
+``inputs``; the monitor builds the dict each poll. The ``@flag_check`` decorator
+converts that dict to a namespace so flag bodies use dot access (``ctx.scan_busy``).
 """
 
 from __future__ import annotations
 
+from functools import wraps
+from types import SimpleNamespace
 from typing import Any, Callable, Optional
 
 # Orange markers: aborted, paused, or beam dump on the event-time plot.
@@ -35,156 +35,109 @@ RED_FLAGS = frozenset(
     }
 )
 
+ContextDict = dict[str, Any]
+FlagLogic = Callable[[SimpleNamespace], bool]
+FlagFunction = Callable[[Optional[ContextDict]], bool]
 
-def struck_miss_trigger(context: Optional[dict[str, Any]] = None) -> bool:
-    """Struck 3820 still acquiring and missing triggers after stage motion done.
 
-    context inputs: acquiring, nuse_all, current_channel, requested_position,
-    actual_position.
+def flag_check(fn: FlagLogic) -> FlagFunction:
+    """Wrap a flag body that takes a namespace of input PV values.
+
+    The monitor passes whatever ``inputs`` labels are in the JSON for that flag.
+    Returns False when context is missing or any value is None (unread PV).
     """
 
-    if not context:
-        return False
-    acquiring = context.get(acquiring)
-    nuse_all = context.get(nuse_all)
-    current_channel = context.get(current_channel)
-    requested_position = context.get(requested_position)
-    actual_position = context.get(actual_position)
-    scan_busy = context.get(scan_busy)
-    dwell_time = context.get(dwell_time)
-    elapsed_time = context.get(elapsed_time)
+    @wraps(fn)
+    def wrapper(context: Optional[ContextDict] = None) -> bool:
+        if not context or any(v is None for v in context.values()):
+            return False
+        return fn(SimpleNamespace(**context))
 
-    missed_trigger = acquiring is not None and \
-        nuse_all is not None and \
-        current_channel is not None and \
-        requested_position is not None and \
-        scan_busy is not None and \
-        dwell_time is not None and \
-        elapsed_time is not None and \
-        int(scan_busy) == 1 and \
-        int(acquiring) == 1 and \
-        int(current_channel) != int(nuse_all) and \
-        int(current_channel) > 0 and \
-        float(elapsed_time)+8 > dwell_time*nuse_all/1000
-
-    return missed_trigger 
-
-def struck_stuck_acquiring(context: Optional[dict[str, Any]] = None) -> bool:
-    """Struck 3820 stuck acquiring after receiving all triggers.
-
-    context inputs: acquiring, nuse_all, current_channel, scan_busy.
-    """
-    if not context:
-        return False
-    acquiring = context.get(acquiring)
-    nuse_all = context.get(nuse_all)
-    current_channel = context.get(current_channel)
-    scan_busy = context.get(scan_busy)
-
-    struck_stuck_acquiring = acquiring is not None and \
-        nuse_all is not None and \
-        current_channel is not None and \
-        scan_busy is not None and \
-        int(scan_busy) == 1 and \
-        int(acquiring) == 1 and \
-        int(current_channel) == int(nuse_all)
-
-    return struck_stuck_acquiring 
+    return wrapper
 
 
-def xspress3_miss_trigger(context: Optional[dict[str, Any]] = None) -> bool:
-    """Xspress3 missed an expected acquisition trigger.
-
-    context inputs: number_of_images, array_counter, detector_state,
-    trigger_mode.
-    """
-        # {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
-        # {"label": "array_rate", "pv": "8bmbXP3:det1:ArrayRate_RBV"},
-        # {"label": "array_num", "pv": "8bmbXP3:det1:NumImages_RBV"},
-        # {"label": "array_counter", "pv": "8bmbXP3:det1:ArrayCounter_RBV"},
-        # {"label": "num_frames", "pv": "8bmbXP3:HDF1:NumCapture_RBV"},
-        # {"label": "saved_frames", "pv": "8bmbXP3:HDF1:NumCaptured_RBV"},
-        # {"label": "detector_state", "pv": "8bmbXP3:det1:DetectorState_RBV"},
-        # {"label": "struck_current", "pv": "8bmb:3820:CurrentChannel"},
-        # {"label": "struck_all", "pv": "8bmb:3820:NuseAll"},
-        # {"label": "struck_acquiring", "pv": "8bmb:3820:Acquiring"}
-    if not context:
-        return False
-    acquiring = context.get(acquiring)
-    nuse_all = context.get(nuse_all)
-    current_channel = context.get(current_channel)
-    scan_busy = context.get(scan_busy)
-
-    struck_stuck_acquiring = acquiring is not None and \
-        nuse_all is not None and \
-        current_channel is not None and \
-        scan_busy is not None and \
-        int(scan_busy) == 1 and \
-        int(acquiring) == 1 and \
-        int(current_channel) == int(nuse_all)
-
-    return struck_stuck_acquiring 
+@flag_check
+def struck_miss_trigger(ctx: SimpleNamespace) -> bool:
+    """Struck 3820 still acquiring and missing triggers after stage motion done."""
+    return (
+        int(ctx.scan_busy) == 1
+        and int(ctx.acquiring) == 1
+        and int(ctx.current_channel) != int(ctx.nuse_all)
+        and int(ctx.current_channel) > 0
+        and float(ctx.elapsed_time) + 8 > ctx.dwell_time * ctx.nuse_all / 1000
+    )
 
 
-def xspress3_lost_frame(context: Optional[dict[str, Any]] = None) -> bool:
-    """Xspress3 saved-frame count differs from received triggers while capturing.
+@flag_check
+def struck_stuck_acquiring(ctx: SimpleNamespace) -> bool:
+    """Struck 3820 stuck acquiring after receiving all triggers."""
+    return (
+        int(ctx.scan_busy) == 1
+        and int(ctx.acquiring) == 1
+        and int(ctx.current_channel) == int(ctx.nuse_all)
+    )
 
-    context inputs: number_of_images, array_counter, capture, num_captured.
-    """
-    return False
+
+@flag_check
+def xspress3_miss_trigger(ctx: SimpleNamespace) -> bool:
+    """Xspress3 missed an expected acquisition trigger."""
+    return (
+        int(ctx.scan_busy) == 1
+        and int(ctx.array_rate) == 0
+        and int(ctx.array_counter) != int(ctx.num_frames)
+        and int(ctx.struck_acquiring) == 0
+        and int(ctx.struck_current) == int(ctx.struck_all)
+    )
 
 
-def filename_not_insync(context: Optional[dict[str, Any]] = None) -> bool:
+@flag_check
+def xspress3_lost_frame(ctx: SimpleNamespace) -> bool:
+    """Xspress3 saved-frame count differs from received triggers while capturing."""
+    return (
+        int(ctx.scan_busy) == 1
+        and int(ctx.array_rate) == 0
+        and int(ctx.num_frames) != int(ctx.saved_frames)
+        and int(ctx.struck_acquiring) == 0
+        and int(ctx.struck_current) == int(ctx.struck_all)
+    )
+
+@flag_check
+def filename_not_insync(ctx: SimpleNamespace) -> bool:
     """Area detector / xspress3 filename PVs are out of sync with the scan."""
-    return False
+    return (
+        int(ctx.scan_busy) == 1
+        and int(ctx.capture) == 1
+        and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        and int(ctx.xp3_file_number)-1 != int(ctx.scan_line)
+    )
 
 
-def beam_dump(context: Optional[dict[str, Any]] = None) -> bool:
-    """Beam dump or beam-off condition detected.
-
-    Worked example of a combination check. context inputs:
-      - actual_mode:   S:ActualMode (4 == user/top-up operations)
-      - desired_mode:  S:DesiredMode (1 == user operations)
-
-    Fires when the ring leaves operations mode or and desired mode is user-operations.
-    """
-    if not context:
-        return False
-    actual_mode = context.get("actual_mode")
-    desired_mode = context.get("desired_mode")
-
-    mode_lost = actual_mode is not None and \
-        desired_mode is not None and \
-        int(actual_mode) != 4 and \
-        int(desired_mode) == 1
-  
-    return mode_lost 
+@flag_check
+def beam_dump(ctx: SimpleNamespace) -> bool:
+    """Beam dump or beam-off: ring left operations mode during user operations."""
+    return int(ctx.actual_mode) != 4 and int(ctx.desired_mode) == 1
 
 
-def ioc_is_down(context: Optional[dict[str, Any]] = None) -> bool:
+def ioc_is_down(context: Optional[ContextDict] = None) -> bool:
     """Required IOC is unreachable or not running."""
     return False
 
 
-def scan_aborted(context: Optional[dict[str, Any]] = None) -> bool:
+def scan_aborted(context: Optional[ContextDict] = None) -> bool:
     """Scan record reports an abort."""
     return False
 
 
-def scan_paused(context: Optional[dict[str, Any]] = None) -> bool:
+def scan_paused(context: Optional[ContextDict] = None) -> bool:
     """Scan record reports a pause."""
     return False
 
 
-def stage_stuck(context: Optional[dict[str, Any]] = None) -> bool:
-    """Sample stage motor not advancing while the scan expects motion.
-
-    context inputs: requested_position, actual_position, velocity, scan_busy.
-    """
+@flag_check
+def stage_stuck(ctx: SimpleNamespace) -> bool:
+    """Sample stage motor not advancing while the scan expects motion."""
     return False
 
-
-FlagFunction = Callable[[Optional[dict[str, Any]]], bool]
 
 FLAG_FUNCTIONS: dict[str, FlagFunction] = {
     "struck_miss_trigger": struck_miss_trigger,

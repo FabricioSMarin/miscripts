@@ -74,9 +74,6 @@
         {"label": "array_rate", "pv": "8bmbXP3:det1:ArrayRate_RBV"},
         {"label": "array_num", "pv": "8bmbXP3:det1:NumImages_RBV"},
         {"label": "array_counter", "pv": "8bmbXP3:det1:ArrayCounter_RBV"},
-        {"label": "num_frames", "pv": "8bmbXP3:HDF1:NumCapture_RBV"},
-        {"label": "saved_frames", "pv": "8bmbXP3:HDF1:NumCaptured_RBV"},
-        {"label": "detector_state", "pv": "8bmbXP3:det1:DetectorState_RBV"},
         {"label": "struck_current", "pv": "8bmb:3820:CurrentChannel"},
         {"label": "struck_all", "pv": "8bmb:3820:NuseAll"},
         {"label": "struck_acquiring", "pv": "8bmb:3820:Acquiring"}
@@ -88,14 +85,23 @@
       "inputs": [
         {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
         {"label": "array_rate", "pv": "8bmbXP3:det1:ArrayRate_RBV"},
-        {"label": "array_num", "pv": "8bmbXP3:det1:NumImages_RBV"},
-        {"label": "array_counter", "pv": "8bmbXP3:det1:ArrayCounter_RBV"},
         {"label": "num_frames", "pv": "8bmbXP3:HDF1:NumCapture_RBV"},
         {"label": "saved_frames", "pv": "8bmbXP3:HDF1:NumCaptured_RBV"},
-        {"label": "detector_state", "pv": "8bmbXP3:det1:DetectorState_RBV"},
         {"label": "struck_current", "pv": "8bmb:3820:CurrentChannel"},
         {"label": "struck_all", "pv": "8bmb:3820:NuseAll"},
         {"label": "struck_acquiring", "pv": "8bmb:3820:Acquiring"}
+      ]
+    },
+
+    "filename_not_insync": {
+      "comment": "Area detector / xspress3 filename PVs are out of sync with the scan.",
+      "inputs": [
+        {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
+        {"label": "capture", "pv": "8bmbXP3:HDF1:Capture_RBV"},
+        {"label": "xp3_file_number", "pv": "8bmbXP3:HDF1:FileNumber"},
+        {"label": "xp3_file_name", "pv": "8bmbXP3:HDF1:FileName"},
+        {"label": "scan_line", "pv": "8bmbsft:Fscan1.CPT"},
+        {"label": "mda_scan_number", "pv": "8bmbsft:saveData_scanNumber"}
       ]
     },
 
