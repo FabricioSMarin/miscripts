@@ -35,7 +35,7 @@
       "comment": "Storage ring beam lost: S:ActualMode leaves user/top-up mode (4) and/or ring current collapses.",
       "inputs": [
         {"label": "actual_mode", "pv": "S:ActualMode"},
-        {"label": "beam_current", "pv": "S:SRcurrentAI"}
+        {"label": "desired_mode", "pv": "SS:DesiredMode"}
       ]
     },
 
@@ -45,48 +45,68 @@
         {"label": "acquiring", "pv": "8bmbsft:3820.Acquiring"},
         {"label": "nuse_all", "pv": "8bmbsft:3820.NuseAll"},
         {"label": "current_channel", "pv": "8bmbsft:3820.CurrentChannel"},
-        {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"}
+        {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
+        {"label": "is_paused", "pv": "8bmbsft:FscanPause.VAL"},
+        {"label": "is_wait_inner", "pv": "8bmbsft:FscanH.WCNT"},
+        {"label": "is_wait_outer", "pv": "8bmbsft:Fscan1.WCNT"}
+        
       ]
     },
 
     "struck_miss_trigger": {
       "comment": "MCS 3820 still acquiring and missing triggers (current_channel < nuse_all) but the stage already completed its motion (requested ~ actual position).",
       "inputs": [
+        {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
         {"label": "acquiring", "pv": "8bmbsft:3820.Acquiring"},
         {"label": "nuse_all", "pv": "8bmbsft:3820.NuseAll"},
+        {"label": "dwell_time", "pv": "8bmb:Flyscans:Setup:DwellTime.VAL"},
+        {"label": "elapsed_time", "pv": "8bmb:3820:ElapsedReal"},
         {"label": "current_channel", "pv": "8bmbsft:3820.CurrentChannel"},
         {"label": "requested_position", "pv": "8bmbsft:m27.VAL"},
-        {"label": "actual_position", "pv": "8bmbsft:m27.RBV"}
+        {"label": "actual_position", "pv": "8bmbsft:m27.RBV"},
       ]
     },
 
     "xspress3_miss_trigger": {
       "comment": "Xspress3 missed acquisition triggers: array_counter lags number_of_images while the detector is still in an acquiring state.",
       "inputs": [
-        {"label": "number_of_images", "pv": "8bmbXP3:det1:NumImages_RBV"},
+        {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
+        {"label": "array_rate", "pv": "8bmbXP3:det1:ArrayRate_RBV"},
+        {"label": "array_num", "pv": "8bmbXP3:det1:NumImages_RBV"},
         {"label": "array_counter", "pv": "8bmbXP3:det1:ArrayCounter_RBV"},
+        {"label": "num_frames", "pv": "8bmbXP3:HDF1:NumCapture_RBV"},
+        {"label": "saved_frames", "pv": "8bmbXP3:HDF1:NumCaptured_RBV"},
         {"label": "detector_state", "pv": "8bmbXP3:det1:DetectorState_RBV"},
-        {"label": "trigger_mode", "pv": "8bmbXP3:det1:TriggerMode_RBV"}
+        {"label": "struck_current", "pv": "8bmb:3820:CurrentChannel"},
+        {"label": "struck_all", "pv": "8bmb:3820:NuseAll"},
+        {"label": "struck_acquiring", "pv": "8bmb:3820:Acquiring"}
       ]
     },
 
     "xspress3_lost_frame": {
       "comment": "Xspress3 number of saved frames differs from received triggers and the HDF writer remains capturing.",
       "inputs": [
-        {"label": "number_of_images", "pv": "8bmbXP3:det1:NumImages_RBV"},
+        {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
+        {"label": "array_rate", "pv": "8bmbXP3:det1:ArrayRate_RBV"},
+        {"label": "array_num", "pv": "8bmbXP3:det1:NumImages_RBV"},
         {"label": "array_counter", "pv": "8bmbXP3:det1:ArrayCounter_RBV"},
-        {"label": "capture", "pv": "8bmbXP3:HDF1:Capture_RBV"},
-        {"label": "num_captured", "pv": "8bmbXP3:HDF1:NumCaptured_RBV"}
+        {"label": "num_frames", "pv": "8bmbXP3:HDF1:NumCapture_RBV"},
+        {"label": "saved_frames", "pv": "8bmbXP3:HDF1:NumCaptured_RBV"},
+        {"label": "detector_state", "pv": "8bmbXP3:det1:DetectorState_RBV"},
+        {"label": "struck_current", "pv": "8bmb:3820:CurrentChannel"},
+        {"label": "struck_all", "pv": "8bmb:3820:NuseAll"},
+        {"label": "struck_acquiring", "pv": "8bmb:3820:Acquiring"}
       ]
     },
 
     "stage_stuck": {
       "comment": "Sample stage does not advance to its next scan position: requested != actual position persists while the scan is busy and velocity is ~0.",
       "inputs": [
-        {"label": "requested_position", "pv": "8bmbsft:m27.VAL"},
-        {"label": "actual_position", "pv": "8bmbsft:m27.RBV"},
-        {"label": "velocity", "pv": "8bmbsft:m27.VELO"},
-        {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"}
+        {"label": "struck_acquiring", "pv": "8bmb:3820:Acquiring"},
+        {"label": "inner_busy", "pv": "8bmbsft:FscanH.BUSY"},
+        {"label": "is_moving", "pv": "8bmb:m27.DMOV"},
+        {"label": "struck_current", "pv": "8bmb:3820:CurrentChannel"},
+        {"label": "elapsed_time", "pv": "8bmb:3820:ElapsedReal"}
       ]
     }
   },

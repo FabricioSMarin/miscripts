@@ -42,15 +42,54 @@ def struck_miss_trigger(context: Optional[dict[str, Any]] = None) -> bool:
     context inputs: acquiring, nuse_all, current_channel, requested_position,
     actual_position.
     """
-    return False
 
+    if not context:
+        return False
+    acquiring = context.get(acquiring)
+    nuse_all = context.get(nuse_all)
+    current_channel = context.get(current_channel)
+    requested_position = context.get(requested_position)
+    actual_position = context.get(actual_position)
+    scan_busy = context.get(scan_busy)
+    dwell_time = context.get(dwell_time)
+    elapsed_time = context.get(elapsed_time)
+
+    missed_trigger = acquiring is not None and \
+        nuse_all is not None and \
+        current_channel is not None and \
+        requested_position is not None and \
+        scan_busy is not None and \
+        dwell_time is not None and \
+        elapsed_time is not None and \
+        int(scan_busy) == 1 and \
+        int(acquiring) == 1 and \
+        int(current_channel) != int(nuse_all) and \
+        int(current_channel) > 0 and \
+        float(elapsed_time)+8 > dwell_time*nuse_all/1000
+
+    return missed_trigger 
 
 def struck_stuck_acquiring(context: Optional[dict[str, Any]] = None) -> bool:
     """Struck 3820 stuck acquiring after receiving all triggers.
 
     context inputs: acquiring, nuse_all, current_channel, scan_busy.
     """
-    return False
+    if not context:
+        return False
+    acquiring = context.get(acquiring)
+    nuse_all = context.get(nuse_all)
+    current_channel = context.get(current_channel)
+    scan_busy = context.get(scan_busy)
+
+    struck_stuck_acquiring = acquiring is not None and \
+        nuse_all is not None and \
+        current_channel is not None and \
+        scan_busy is not None and \
+        int(scan_busy) == 1 and \
+        int(acquiring) == 1 and \
+        int(current_channel) == int(nuse_all)
+
+    return struck_stuck_acquiring 
 
 
 def xspress3_miss_trigger(context: Optional[dict[str, Any]] = None) -> bool:
@@ -59,7 +98,32 @@ def xspress3_miss_trigger(context: Optional[dict[str, Any]] = None) -> bool:
     context inputs: number_of_images, array_counter, detector_state,
     trigger_mode.
     """
-    return False
+        # {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
+        # {"label": "array_rate", "pv": "8bmbXP3:det1:ArrayRate_RBV"},
+        # {"label": "array_num", "pv": "8bmbXP3:det1:NumImages_RBV"},
+        # {"label": "array_counter", "pv": "8bmbXP3:det1:ArrayCounter_RBV"},
+        # {"label": "num_frames", "pv": "8bmbXP3:HDF1:NumCapture_RBV"},
+        # {"label": "saved_frames", "pv": "8bmbXP3:HDF1:NumCaptured_RBV"},
+        # {"label": "detector_state", "pv": "8bmbXP3:det1:DetectorState_RBV"},
+        # {"label": "struck_current", "pv": "8bmb:3820:CurrentChannel"},
+        # {"label": "struck_all", "pv": "8bmb:3820:NuseAll"},
+        # {"label": "struck_acquiring", "pv": "8bmb:3820:Acquiring"}
+    if not context:
+        return False
+    acquiring = context.get(acquiring)
+    nuse_all = context.get(nuse_all)
+    current_channel = context.get(current_channel)
+    scan_busy = context.get(scan_busy)
+
+    struck_stuck_acquiring = acquiring is not None and \
+        nuse_all is not None and \
+        current_channel is not None and \
+        scan_busy is not None and \
+        int(scan_busy) == 1 and \
+        int(acquiring) == 1 and \
+        int(current_channel) == int(nuse_all)
+
+    return struck_stuck_acquiring 
 
 
 def xspress3_lost_frame(context: Optional[dict[str, Any]] = None) -> bool:
@@ -80,21 +144,21 @@ def beam_dump(context: Optional[dict[str, Any]] = None) -> bool:
 
     Worked example of a combination check. context inputs:
       - actual_mode:   S:ActualMode (4 == user/top-up operations)
-      - beam_current:  S:SRcurrentAI (mA)
+      - desired_mode:  S:DesiredMode (1 == user operations)
 
-    Fires when the ring leaves operations mode or the stored current collapses.
+    Fires when the ring leaves operations mode or and desired mode is user-operations.
     """
     if not context:
         return False
     actual_mode = context.get("actual_mode")
-    beam_current = context.get("beam_current")
+    desired_mode = context.get("desired_mode")
 
-    mode_lost = actual_mode is not None and int(actual_mode) != 4
-    try:
-        current_lost = beam_current is not None and float(beam_current) < 2.0
-    except (TypeError, ValueError):
-        current_lost = False
-    return mode_lost or current_lost
+    mode_lost = actual_mode is not None and \
+        desired_mode is not None and \
+        int(actual_mode) != 4 and \
+        int(desired_mode) == 1
+  
+    return mode_lost 
 
 
 def ioc_is_down(context: Optional[dict[str, Any]] = None) -> bool:
