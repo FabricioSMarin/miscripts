@@ -64,7 +64,7 @@ def struck_miss_trigger(ctx: SimpleNamespace) -> bool:
         and int(ctx.acquiring) == 1
         and int(ctx.current_channel) != int(ctx.nuse_all)
         and int(ctx.current_channel) > 0
-        and (float(ctx.elapsed_time) + 8) > (ctx.dwell_time * ctx.nuse_all / 1000)
+        and (float(ctx.elapsed_time)) > (8 + ctx.dwell_time * ctx.nuse_all / 1000)
     )
 
 
