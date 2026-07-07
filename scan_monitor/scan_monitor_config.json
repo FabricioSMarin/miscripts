@@ -8,6 +8,8 @@
     "EPICS_CA_ADDR_LIST": "10.54.108.4"
   },
 
+  "flag_confirm_s": 5.0,
+
   "scan_started": [
     {
       "pv": "8bmbsft:Fscan1.BUSY",

@@ -17,6 +17,9 @@ Outputs (written to output_dir from config):
   - flag_events.jsonl         one record per flag event
   - spreadsheet_view.png      tabular view of scans.csv
   - event_time_plot.png       timeline of scan starts and flag events
+
+At launch an interactive timeline window can show events in real time (optional).
+The saved PNG always includes all events, including those loaded from prior runs.
 """
 
 from __future__ import annotations
@@ -34,7 +37,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+from matplotlib.widgets import CheckButtons
 
 from scan_monitor_flags import FLAG_FUNCTIONS, marker_color
 
@@ -154,8 +159,96 @@ def trigger_matches(previous: Any, current: Any, rule: dict[str, Any]) -> bool:
     raise ValueError(f"unknown scan_started trigger {when!r}")
 
 
+def load_past_timeline_events(output_dir: Path) -> list[TimelineEvent]:
+    """Rebuild timeline entries from prior output files in *output_dir*."""
+    events: list[TimelineEvent] = []
+
+    scans_csv = output_dir / "scans.csv"
+    if scans_csv.exists():
+        with scans_csv.open(newline="", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                iso_time = row.get("iso_time", "")
+                if not iso_time:
+                    continue
+                try:
+                    timestamp = datetime.fromisoformat(iso_time).timestamp()
+                except ValueError:
+                    continue
+                scan_number = row.get("scan_number", "?")
+                events.append(
+                    TimelineEvent(
+                        timestamp=timestamp,
+                        iso_time=iso_time,
+                        kind="scan_started",
+                        label=f"scan {scan_number}",
+                        color="green",
+                        scan_number=scan_number,
+                    )
+                )
+
+    flag_events_path = output_dir / "flag_events.jsonl"
+    if flag_events_path.exists():
+        with flag_events_path.open(encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    record = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                flag_name = record.get("flag", "?")
+                events.append(
+                    TimelineEvent(
+                        timestamp=float(record["timestamp"]),
+                        iso_time=record.get("iso_time", ""),
+                        kind="flag",
+                        label=flag_name,
+                        color=marker_color(flag_name),
+                        scan_number=record.get("scan_number"),
+                        details=record.get("values", {}),
+                    )
+                )
+
+    events.sort(key=lambda event: event.timestamp)
+    return events
+
+
+def draw_event_timeline(ax: Any, events: list[TimelineEvent], *, title: str) -> None:
+    ax.clear()
+    if not events:
+        ax.text(0.5, 0.5, "No events yet", ha="center", va="center", transform=ax.transAxes)
+    else:
+        for event in events:
+            t = datetime.fromtimestamp(event.timestamp, tz=timezone.utc)
+            ax.scatter([t], [0], c=event.color, s=80, zorder=3)
+            ax.annotate(
+                event.label,
+                (t, 0),
+                textcoords="offset points",
+                xytext=(0, 10 if event.color == "green" else -14),
+                ha="center",
+                fontsize=8,
+                color=event.color if event.color != "green" else "darkgreen",
+            )
+        ax.xaxis.set_major_locator(mdates.AutoDateLocator())
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d %H:%M"))
+
+    ax.set_yticks([])
+    ax.set_xlabel("time (UTC)")
+    ax.set_title(title)
+    ax.grid(True, axis="x", alpha=0.3)
+
+
 class ScanMonitor:
-    def __init__(self, config: dict[str, Any], output_dir: Path) -> None:
+    def __init__(
+        self,
+        config: dict[str, Any],
+        output_dir: Path,
+        *,
+        live_plot: bool = True,
+        live_plot_show_past: bool = False,
+    ) -> None:
         self.config = config
         self.output_dir = output_dir
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -166,9 +259,17 @@ class ScanMonitor:
         self._lock = threading.Lock()
         self._last_scan_started_values: dict[str, Any] = {}
         self._last_flag_fire: dict[str, float] = {}
+        self._flag_confirm_pending: dict[str, float] = {}
         self._pvs: list[Any] = []
         self.flag_cooldown_s = float(config.get("flag_cooldown_s", 5.0))
+        self.flag_confirm_s = float(config.get("flag_confirm_s", 5.0))
         self.flag_poll_s = float(config.get("flag_poll_s", 1.0))
+        self.live_plot_enabled = live_plot
+        self._live_show_past = live_plot_show_past
+        self.session_start = 0.0
+        self._live_fig: Any = None
+        self._live_ax: Any = None
+        self._plot_needs_update = False
 
         self.log_path = self.output_dir / "scan_monitor.log"
         self.scans_csv_path = self.output_dir / "scans.csv"
@@ -176,7 +277,16 @@ class ScanMonitor:
         self.spreadsheet_path = self.output_dir / "spreadsheet_view.png"
         self.event_plot_path = self.output_dir / "event_time_plot.png"
 
+        self._load_past_timeline()
         self._setup_logging()
+
+    def _load_past_timeline(self) -> None:
+        past = load_past_timeline_events(self.output_dir)
+        if not past:
+            return
+        with self._lock:
+            self.timeline.extend(past)
+            self.timeline.sort(key=lambda event: event.timestamp)
 
     def _setup_logging(self) -> None:
         self.logger = logging.getLogger("scan_monitor")
@@ -263,12 +373,13 @@ class ScanMonitor:
         self.write_outputs()
 
     def evaluate_flags(self) -> None:
-        """Poll each configured flag.
+        """Poll each configured flag with two-check confirmation.
 
         For every flag listed in the config's ``flags`` section, its ``inputs``
         PVs are read and passed as the ``context`` dict (keyed by label) to the
-        matching function in ``scan_monitor_flags.py``. The function applies the
-        multi-PV calculation and returns True when the fault condition is met.
+        matching function in ``scan_monitor_flags.py``. When a check returns
+        True, the same flag is re-checked after ``flag_confirm_s`` seconds;
+        the event is logged only if both checks pass.
         """
         now = time.time()
         flag_specs = self.config.get("flags", {})
@@ -293,9 +404,29 @@ class ScanMonitor:
             except Exception as exc:
                 self.logger.exception("flag check failed for %s: %s", flag_name, exc)
                 continue
+
+            pending_since = self._flag_confirm_pending.get(flag_name)
             if not fired:
+                if pending_since is not None:
+                    self.logger.debug(
+                        "flag %s failed before confirmation; discarding", flag_name
+                    )
+                    del self._flag_confirm_pending[flag_name]
                 continue
 
+            if pending_since is None:
+                self._flag_confirm_pending[flag_name] = now
+                self.logger.debug(
+                    "flag %s passed first check; confirming in %.0fs",
+                    flag_name,
+                    self.flag_confirm_s,
+                )
+                continue
+
+            if now - pending_since < self.flag_confirm_s:
+                continue
+
+            del self._flag_confirm_pending[flag_name]
             self._last_flag_fire[flag_name] = now
             flag_values = read_labeled_pvs(self.config["flag_events"])
             self.on_flag_event(flag_name, flag_values)
@@ -350,35 +481,59 @@ class ScanMonitor:
             events = list(self.timeline)
 
         fig, ax = plt.subplots(figsize=(11, 4))
-        if not events:
-            ax.text(0.5, 0.5, "No events yet", ha="center", va="center", transform=ax.transAxes)
-        else:
-            t0 = events[0].timestamp
-            for event in events:
-                x = event.timestamp - t0
-                ax.scatter([x], [0], c=event.color, s=80, zorder=3)
-                ax.annotate(
-                    event.label,
-                    (x, 0),
-                    textcoords="offset points",
-                    xytext=(0, 10 if event.color == "green" else -14),
-                    ha="center",
-                    fontsize=8,
-                    color=event.color if event.color != "green" else "darkgreen",
-                )
-
-        ax.set_yticks([])
-        ax.set_xlabel("time since first event (s)")
-        ax.set_title("Scan and flag event timeline")
-        ax.grid(True, axis="x", alpha=0.3)
+        draw_event_timeline(ax, events, title="Scan and flag event timeline")
+        if events:
+            fig.autofmt_xdate()
         fig.tight_layout()
         fig.savefig(self.event_plot_path, dpi=150, bbox_inches="tight")
         plt.close(fig)
+
+    def _events_for_live_plot(self) -> list[TimelineEvent]:
+        with self._lock:
+            events = list(self.timeline)
+        if not self._live_show_past:
+            events = [event for event in events if event.timestamp >= self.session_start]
+        return events
+
+    def start_live_plot(self) -> None:
+        if not self.live_plot_enabled:
+            return
+        try:
+            plt.ion()
+            self._live_fig, self._live_ax = plt.subplots(figsize=(11, 4))
+            self._live_fig.canvas.manager.set_window_title("Scan monitor — live timeline")
+            ax_check = self._live_fig.add_axes([0.02, 0.02, 0.18, 0.12])
+            check = CheckButtons(ax_check, ["Past events"], [self._live_show_past])
+            check.on_clicked(self._on_live_past_events_toggle)
+            self.update_live_plot()
+            plt.show(block=False)
+            self._live_fig.canvas.draw()
+        except Exception as exc:
+            self.logger.warning("could not open live plot window: %s", exc)
+            self.live_plot_enabled = False
+            self._live_fig = None
+            self._live_ax = None
+
+    def _on_live_past_events_toggle(self, _label: str) -> None:
+        self._live_show_past = not self._live_show_past
+        self.update_live_plot()
+
+    def update_live_plot(self) -> None:
+        if not self.live_plot_enabled or self._live_ax is None or self._live_fig is None:
+            return
+        title = "Scan and flag event timeline (live)"
+        if not self._live_show_past:
+            title += " — this session"
+        draw_event_timeline(self._live_ax, self._events_for_live_plot(), title=title)
+        self._live_fig.autofmt_xdate()
+        self._live_fig.tight_layout()
+        self._live_fig.canvas.draw_idle()
 
     def write_outputs(self) -> None:
         self.write_scans_csv()
         self.write_spreadsheet_view()
         self.write_event_time_plot()
+        self._plot_needs_update = True
 
     def _scan_started_callback(self, pvname: str, value: Any) -> None:
         previous = self._last_scan_started_values.get(pvname)
@@ -431,14 +586,22 @@ class ScanMonitor:
         return callback
 
     def run(self) -> None:
+        self.session_start = time.time()
+        if self.live_plot_enabled:
+            self.start_live_plot()
         self.start_epics_monitoring()
         self.logger.info("scan monitor running; Ctrl+C to stop")
         try:
             while True:
                 self.evaluate_flags()
+                if self.live_plot_enabled and self._plot_needs_update:
+                    self.update_live_plot()
+                    self._plot_needs_update = False
                 time.sleep(self.flag_poll_s)
         except KeyboardInterrupt:
             self.logger.info("stopped by user")
+            if self.live_plot_enabled and self._live_fig is not None:
+                plt.close(self._live_fig)
 
 
 def run_demo(output_dir: Path) -> None:
@@ -475,7 +638,7 @@ def run_demo(output_dir: Path) -> None:
             {"label": "actual_position", "pv": "8bmbsft:m27.RBV"},
         ],
     }
-    monitor = ScanMonitor(config, output_dir)
+    monitor = ScanMonitor(config, output_dir, live_plot=False)
     monitor.logger.info("demo mode (no EPICS)")
 
     base, _ = utc_now()
@@ -617,6 +780,16 @@ def main() -> None:
         action="store_true",
         help="write sample log/plots without connecting to EPICS",
     )
+    parser.add_argument(
+        "--no-live-plot",
+        action="store_true",
+        help="do not open the interactive timeline window at launch",
+    )
+    parser.add_argument(
+        "--plot-past-events",
+        action="store_true",
+        help="live plot includes events from prior runs in the output dir (default: this session only)",
+    )
     args = parser.parse_args()
 
     if args.demo:
@@ -627,7 +800,12 @@ def main() -> None:
     config = load_config(args.config)
     apply_environment_variables(config.get("environment_variables"))
     output_dir = args.output_dir or Path(config.get("output_dir", "scan_monitor_output"))
-    monitor = ScanMonitor(config, output_dir)
+    monitor = ScanMonitor(
+        config,
+        output_dir,
+        live_plot=not args.no_live_plot,
+        live_plot_show_past=args.plot_past_events,
+    )
     monitor.run()
 
 
