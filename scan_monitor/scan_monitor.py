@@ -9,6 +9,7 @@ Reads PV definitions from a JSON config with these sections:
     dict to the matching function in scan_monitor_flags.py, which applies
     the multi-PV calculation and returns True on a fault
   - flag_events: diagnostic-snapshot PVs logged when any flag fires
+  - environment_variables: process env vars applied before EPICS connects
 
 Outputs (written to output_dir from config):
   - scan_monitor.log          session text log
@@ -24,6 +25,7 @@ import argparse
 import csv
 import json
 import logging
+import os
 import sys
 import threading
 import time
@@ -36,10 +38,7 @@ import matplotlib.pyplot as plt
 
 from scan_monitor_flags import FLAG_FUNCTIONS, marker_color
 
-try:
-    import epics
-except ImportError:  # pragma: no cover - optional at import time for --demo
-    epics = None  # type: ignore[assignment]
+epics: Any = None
 
 
 @dataclass
@@ -75,10 +74,27 @@ def load_config(path: Path) -> dict[str, Any]:
     return config
 
 
-def pv_value(pv_name: str) -> Any:
+def apply_environment_variables(env: dict[str, Any] | None) -> None:
+    if not env:
+        return
+    for key, value in env.items():
+        if value is not None:
+            os.environ[str(key)] = str(value)
+
+
+def ensure_epics() -> Any:
+    global epics
     if epics is None:
-        raise RuntimeError("pyepics is not installed")
-    value = epics.caget(pv_name, timeout=2.0)
+        try:
+            import epics as epics_mod
+        except ImportError as exc:
+            raise RuntimeError("pyepics is not installed") from exc
+        epics = epics_mod
+    return epics
+
+
+def pv_value(pv_name: str) -> Any:
+    value = ensure_epics().caget(pv_name, timeout=2.0)
     if value is None:
         raise RuntimeError(f"failed to read PV {pv_name!r}")
     return value
@@ -360,8 +376,7 @@ class ScanMonitor:
                 return
 
     def start_epics_monitoring(self) -> None:
-        if epics is None:
-            raise RuntimeError("pyepics is required for live monitoring (pip install pyepics)")
+        ep = ensure_epics()
 
         pvs = {rule["pv"] for rule in self.config["scan_started"]}
         for entry in self.config["scan_parameters"]:
@@ -375,10 +390,10 @@ class ScanMonitor:
 
         started_pvs = {r["pv"] for r in self.config["scan_started"]}
         for pv_name in sorted(pvs):
-            initial = epics.caget(pv_name, timeout=2.0)
+            initial = ep.caget(pv_name, timeout=2.0)
             if pv_name in started_pvs:
                 self._last_scan_started_values[pv_name] = initial
-            self._pvs.append(epics.PV(pv_name, callback=self._make_callback(pv_name)))
+            self._pvs.append(ep.PV(pv_name, callback=self._make_callback(pv_name)))
 
         self.logger.info("monitoring %d PVs; outputs in %s", len(pvs), self.output_dir)
 
@@ -587,6 +602,7 @@ def main() -> None:
         return
 
     config = load_config(args.config)
+    apply_environment_variables(config.get("environment_variables"))
     output_dir = args.output_dir or Path(config.get("output_dir", "scan_monitor_output"))
     monitor = ScanMonitor(config, output_dir)
     monitor.run()

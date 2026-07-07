@@ -4,6 +4,10 @@
   "scan_number_pv": "8bmbsft:saveData_scanNumber",
   "output_dir_pv": "8bmbsft:saveData_fileSystem",
 
+  "environment_variables": {
+    "EPICS_CA_ADDR_LIST": "10.54.108.4"
+  },
+
   "scan_started": [
     {
       "pv": "8bmbsft:Fscan1.BUSY",
@@ -35,16 +39,16 @@
       "comment": "Storage ring beam lost: S:ActualMode leaves user/top-up mode (4) and/or ring current collapses.",
       "inputs": [
         {"label": "actual_mode", "pv": "S:ActualMode"},
-        {"label": "desired_mode", "pv": "S:DesiredMode"}
+        {"label": "desired_mode", "pv": "SS:DesiredMode"}
       ]
     },
 
     "struck_stuck_acquiring": {
       "comment": "MCS 3820 remains acquiring even after receiving all triggers (current_channel reached nuse_all but Acquiring stays 1 and scan is no longer busy).",
       "inputs": [
-        {"label": "acquiring", "pv": "8bmb:3820.Acquiring"},
-        {"label": "nuse_all", "pv": "8bmb:3820.NuseAll"},
-        {"label": "current_channel", "pv": "8bmb:3820.CurrentChannel"},
+        {"label": "acquiring", "pv": "8bmbsft:3820.Acquiring"},
+        {"label": "nuse_all", "pv": "8bmbsft:3820.NuseAll"},
+        {"label": "current_channel", "pv": "8bmbsft:3820.CurrentChannel"},
         {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
         {"label": "is_paused", "pv": "8bmbsft:FscanPause.VAL"},
         {"label": "is_wait_inner", "pv": "8bmbsft:FscanH.WCNT"},
@@ -57,13 +61,13 @@
       "comment": "MCS 3820 still acquiring and missing triggers (current_channel < nuse_all) but the stage already completed its motion (requested ~ actual position).",
       "inputs": [
         {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
-        {"label": "acquiring", "pv": "8bmb:3820.Acquiring"},
-        {"label": "nuse_all", "pv": "8bmb:3820.NuseAll"},
+        {"label": "acquiring", "pv": "8bmbsft:3820.Acquiring"},
+        {"label": "nuse_all", "pv": "8bmbsft:3820.NuseAll"},
         {"label": "dwell_time", "pv": "8bmb:Flyscans:Setup:DwellTime.VAL"},
         {"label": "elapsed_time", "pv": "8bmb:3820:ElapsedReal"},
-        {"label": "current_channel", "pv": "8bmb:3820.CurrentChannel"},
-        {"label": "requested_position", "pv": "8bmb:m27.VAL"},
-        {"label": "actual_position", "pv": "8bmb:m27.RBV"}
+        {"label": "current_channel", "pv": "8bmbsft:3820.CurrentChannel"},
+        {"label": "requested_position", "pv": "8bmbsft:m27.VAL"},
+        {"label": "actual_position", "pv": "8bmbsft:m27.RBV"}
       ]
     },
 
@@ -119,10 +123,10 @@
 
   "flag_events": [
     {"label": "scan_execute", "pv": "8bmbsft:Fscan1.EXSC"},
-    {"label": "acquiring", "pv": "8bmb:3820.Acquiring"},
-    {"label": "elapsed_real", "pv": "8bmb:3820.ElapsedReal"},
-    {"label": "nuse_all", "pv": "8bmb:3820.NuseAll"},
-    {"label": "current_channel", "pv": "8bmb:3820.CurrentChannel"},
+    {"label": "acquiring", "pv": "8bmbsft:3820.Acquiring"},
+    {"label": "elapsed_real", "pv": "8bmbsft:3820.ElapsedReal"},
+    {"label": "nuse_all", "pv": "8bmbsft:3820.NuseAll"},
+    {"label": "current_channel", "pv": "8bmbsft:3820.CurrentChannel"},
     {"label": "number_of_images", "pv": "8bmbXP3:det1:NumImages_RBV"},
     {"label": "array_counter", "pv": "8bmbXP3:det1:ArrayCounter_RBV"},
     {"label": "detector_state", "pv": "8bmbXP3:det1:DetectorState_RBV"},
@@ -131,10 +135,10 @@
     {"label": "full_file_name", "pv": "8bmbXP3:HDF1:FullFileName_RBV"},
     {"label": "file_path_exists", "pv": "8bmbXP3:HDF1:FilePathExists_RBV"},
     {"label": "array_rate", "pv": "8bmbXP3:det1:ArrayRate_RBV"},
-    {"label": "requested_position", "pv": "8bmb:m27.VAL"},
-    {"label": "actual_position", "pv": "8bmb:m27.RBV"},
-    {"label": "velocity", "pv": "8bmb:m27.VELO"},
-    {"label": "vmax", "pv": "8bmb:m27.VMAX"},
+    {"label": "requested_position", "pv": "8bmbsft:m27.VAL"},
+    {"label": "actual_position", "pv": "8bmbsft:m27.RBV"},
+    {"label": "velocity", "pv": "8bmbsft:m27.VELO"},
+    {"label": "vmax", "pv": "8bmbsft:m27.VMAX"},
     {"label": "beam_current", "pv": "S:SRcurrentAI"},
     {"label": "actual_mode", "pv": "S:ActualMode"}
   ]
