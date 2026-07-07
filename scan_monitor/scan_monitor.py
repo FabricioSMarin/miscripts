@@ -53,7 +53,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import CheckButtons
 
-from scan_monitor_flags import FLAG_FUNCTIONS, marker_color
+from scan_monitor_flags import FLAG_FUNCTIONS, FLAGS_NO_CONFIRM, begin_flag_poll, marker_color
 
 epics: Any = None
 
@@ -408,6 +408,7 @@ class ScanMonitor:
         the event is logged only if both checks pass.
         """
         now = time.time()
+        begin_flag_poll()
         flag_specs = self.config.get("flags", {})
         for flag_name, spec in flag_specs.items():
             check = FLAG_FUNCTIONS.get(flag_name)
@@ -438,6 +439,12 @@ class ScanMonitor:
                         "flag %s failed before confirmation; discarding", flag_name
                     )
                     del self._flag_confirm_pending[flag_name]
+                continue
+
+            if flag_name in FLAGS_NO_CONFIRM:
+                self._last_flag_fire[flag_name] = now
+                flag_values = read_labeled_pvs(self.config["flag_events"])
+                self.on_flag_event(flag_name, flag_values)
                 continue
 
             if pending_since is None:

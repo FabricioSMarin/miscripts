@@ -21,6 +21,7 @@
 
   "scan_parameters": [
     {"label": "scan_number", "pv": "8bmbsft:saveData_scanNumber"},
+    {"label": "dwell_time", "pv": "8bmb:Flyscans:Setup:DwellTime.VAL"},
     {"label": "Xnpts", "pv": "8bmbsft:FscanH.NPTS"},
     {"label": "Ynpts", "pv": "8bmbsft:Fscan1.NPTS"},
     {"label": "Xstart", "pv": "8bmbsft:FscanH.P1SP"},
@@ -44,6 +45,35 @@
         {"label": "desired_mode", "pv": "S:DesiredMode"}
       ]
     },
+
+  "scan_paused": {
+    "comment": "Scan pause record went active.",
+    "inputs": [
+      {"label": "is_paused", "pv": "8bmbsft:FscanPause.VAL"},
+      {"label": "is_wait_inner", "pv": "8bmbsft:FscanH.WCNT"},
+      {"label": "is_wait_outer", "pv": "8bmbsft:Fscan1.WCNT"},
+      {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"}
+    ]
+  },
+
+  "scan_unpaused": {
+    "comment": "Scan pause record went inactive.",
+    "inputs": [
+      {"label": "is_paused", "pv": "8bmbsft:FscanPause.VAL"},
+      {"label": "is_wait_inner", "pv": "8bmbsft:FscanH.WCNT"},
+      {"label": "is_wait_outer", "pv": "8bmbsft:Fscan1.WCNT"},
+      {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"}
+    ]
+  },
+
+  "scan_aborted": {
+    "comment": "Scan was aborted.",
+    "inputs": [
+      {"label": "message_outer", "pv": "8bmbsft:Fscan1.SMSG", "as": "string"},
+      {"label": "message_inner", "pv": "8bmbsft:FscanH.SMSG", "as": "string"}
+    ]
+  },
+
 
     "struck_stuck_acquiring": {
       "comment": "MCS 3820 remains acquiring even after receiving all triggers (current_channel reached nuse_all but Acquiring stays 1 and scan is no longer busy).",
@@ -99,6 +129,14 @@
       ]
     },
 
+    "write_error": {
+      "comment": "Xspress3 write error: the detector is in an error state and the HDF writer is not capturing.",
+      "inputs": [
+        {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
+        {"label": "write_status", "pv": "8bmbXP3:HDF1:WriteStatus_RBV"}
+      ]
+    },
+
     "filename_not_insync": {
       "comment": "Area detector / xspress3 filename PVs are out of sync with the scan.",
       "inputs": [
@@ -126,6 +164,7 @@
   "flag_events": [
     {"label": "scan_execute", "pv": "8bmbsft:Fscan1.EXSC"},
     {"label": "acquiring", "pv": "8bmb:3820:Acquiring"},
+    {"label": "dwell_time", "pv": "8bmb:Flyscans:Setup:DwellTime.VAL"},
     {"label": "elapsed_real", "pv": "8bmb:3820:ElapsedReal"},
     {"label": "nuse_all", "pv": "8bmb:3820:NuseAll"},
     {"label": "current_channel", "pv": "8bmb:3820:CurrentChannel"},

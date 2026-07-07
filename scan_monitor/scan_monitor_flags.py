@@ -19,8 +19,11 @@ from functools import wraps
 from types import SimpleNamespace
 from typing import Any, Callable, Optional
 
+# Flags that fire immediately on first positive check (no flag_confirm_s wait).
+FLAGS_NO_CONFIRM = frozenset({"scan_aborted", "scan_paused", "scan_unpaused"})
+
 # Orange markers: aborted, paused, or beam dump on the event-time plot.
-ORANGE_FLAGS = frozenset({"scan_aborted", "beam_dump", "scan_paused"})
+ORANGE_FLAGS = frozenset({"scan_aborted", "beam_dump", "scan_paused", "scan_unpaused"})
 
 # Red markers: all other flag events.
 RED_FLAGS = frozenset(
@@ -101,9 +104,26 @@ def xspress3_lost_frame(ctx: SimpleNamespace) -> bool:
         and int(ctx.struck_current) == int(ctx.struck_all)
     )
 
+def _as_text(value: Any) -> str:
+    if isinstance(value, str):
+        return value.rstrip("\x00")
+    try:
+        seq = value.tolist() if hasattr(value, "tolist") else value
+        if isinstance(seq, (list, tuple)) and seq and isinstance(seq[0], (int, float)):
+            return "".join(chr(int(c)) for c in seq if int(c) != 0)
+    except (TypeError, ValueError):
+        pass
+    return str(value).rstrip("\x00")
+
+
 def _scan_num_from_filename(name: Any) -> int:
     suffix = str(name).rsplit("_", 1)[-1]
     return int(suffix)
+
+@flag_check
+def write_error(ctx: SimpleNamespace) -> bool:
+    """Xspress3 write error: the detector is in an error state and the HDF writer is not capturing."""
+    return int(ctx.scan_busy) == 1 and int(ctx.write_status) != 0
 
 
 @flag_check
@@ -128,14 +148,67 @@ def ioc_is_down(context: Optional[ContextDict] = None) -> bool:
     return False
 
 
-def scan_aborted(context: Optional[ContextDict] = None) -> bool:
-    """Scan record reports an abort."""
-    return False
+@flag_check
+def scan_aborted(ctx: SimpleNamespace) -> bool:
+    """Scan record status message reports an abort."""
+    return "Abort," in _as_text(ctx.message_outer) or "Abort," in _as_text(ctx.message_inner)
 
 
-def scan_paused(context: Optional[ContextDict] = None) -> bool:
-    """Scan record reports a pause."""
-    return False
+_pause_state_initialized = False
+_last_pause_state = False
+_pause_edges_for_tick: tuple[tuple[int, int, int, int], bool, bool] | None = None
+
+
+def begin_flag_poll() -> None:
+    """Clear per-poll pause edge cache; call once at the start of each flag poll."""
+    global _pause_edges_for_tick
+    _pause_edges_for_tick = None
+
+
+def _in_pause_state(ctx: SimpleNamespace) -> bool:
+    return (
+        int(ctx.is_paused) == 1
+        or int(ctx.is_wait_inner) != 0
+        or int(ctx.is_wait_outer) != 0
+    )
+
+
+def _pause_edges(ctx: SimpleNamespace) -> tuple[bool, bool]:
+    """Return (paused_edge, unpaused_edge) once per poll tick."""
+    global _pause_state_initialized, _last_pause_state, _pause_edges_for_tick
+    tick = (
+        int(ctx.is_paused),
+        int(ctx.is_wait_inner),
+        int(ctx.is_wait_outer),
+        int(ctx.scan_busy),
+    )
+    if _pause_edges_for_tick is not None and _pause_edges_for_tick[0] == tick:
+        return _pause_edges_for_tick[1], _pause_edges_for_tick[2]
+
+    in_pause = _in_pause_state(ctx)
+    if not _pause_state_initialized:
+        _pause_state_initialized = True
+        _last_pause_state = in_pause
+        paused_edge, unpaused_edge = False, False
+    else:
+        paused_edge = in_pause and not _last_pause_state
+        unpaused_edge = _last_pause_state and not in_pause and int(ctx.scan_busy) == 1
+        _last_pause_state = in_pause
+
+    _pause_edges_for_tick = (tick, paused_edge, unpaused_edge)
+    return paused_edge, unpaused_edge
+
+
+@flag_check
+def scan_paused(ctx: SimpleNamespace) -> bool:
+    """Scan entered a paused/wait state (edge-triggered)."""
+    return _pause_edges(ctx)[0]
+
+
+@flag_check
+def scan_unpaused(ctx: SimpleNamespace) -> bool:
+    """Scan resumed after pause/wait while still busy (edge-triggered)."""
+    return _pause_edges(ctx)[1]
 
 
 @flag_check
@@ -154,6 +227,7 @@ FLAG_FUNCTIONS: dict[str, FlagFunction] = {
     "ioc_is_down": ioc_is_down,
     "scan_aborted": scan_aborted,
     "scan_paused": scan_paused,
+    "scan_unpaused": scan_unpaused,
     "stage_stuck": stage_stuck,
 }
 
