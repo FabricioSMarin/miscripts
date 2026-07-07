@@ -564,7 +564,7 @@ def main() -> None:
         "-c",
         "--config",
         type=Path,
-        default=Path(__file__).resolve().parent / "scan_monitor_config.example.json",
+        default=Path(__file__).resolve().parent / "scan_monitor_config.json",
         help="JSON file with scan_started, scan_parameters, and flag_events sections",
     )
     parser.add_argument(
