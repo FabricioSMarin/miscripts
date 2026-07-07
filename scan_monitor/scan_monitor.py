@@ -37,6 +37,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import matplotlib
+
+if not os.environ.get("MPLBACKEND"):
+    for _backend in ("TkAgg", "Qt5Agg", "GTK3Agg"):
+        try:
+            matplotlib.use(_backend)
+            break
+        except ImportError:
+            continue
+
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from matplotlib.widgets import CheckButtons
@@ -216,8 +226,17 @@ def load_past_timeline_events(output_dir: Path) -> list[TimelineEvent]:
 
 def draw_event_timeline(ax: Any, events: list[TimelineEvent], *, title: str) -> None:
     ax.clear()
+    ax.set_facecolor("white")
     if not events:
-        ax.text(0.5, 0.5, "No events yet", ha="center", va="center", transform=ax.transAxes)
+        ax.text(
+            0.5,
+            0.5,
+            "No events yet",
+            ha="center",
+            va="center",
+            transform=ax.transAxes,
+            color="black",
+        )
     else:
         for event in events:
             t = datetime.fromtimestamp(event.timestamp, tz=timezone.utc)
@@ -233,10 +252,14 @@ def draw_event_timeline(ax: Any, events: list[TimelineEvent], *, title: str) -> 
             )
         ax.xaxis.set_major_locator(mdates.AutoDateLocator())
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d %H:%M"))
+        for label in ax.get_xticklabels():
+            label.set_rotation(30)
+            label.set_ha("right")
 
     ax.set_yticks([])
-    ax.set_xlabel("time (UTC)")
-    ax.set_title(title)
+    ax.set_xlabel("time (UTC)", color="black")
+    ax.set_title(title, color="black")
+    ax.tick_params(colors="black")
     ax.grid(True, axis="x", alpha=0.3)
 
 
@@ -500,14 +523,19 @@ class ScanMonitor:
             return
         try:
             plt.ion()
-            self._live_fig, self._live_ax = plt.subplots(figsize=(11, 4))
-            self._live_fig.canvas.manager.set_window_title("Scan monitor — live timeline")
-            ax_check = self._live_fig.add_axes([0.02, 0.02, 0.18, 0.12])
+            self._live_fig = plt.figure(figsize=(11, 4), facecolor="white")
+            # Fixed axes positions: tight_layout breaks when CheckButtons is present.
+            self._live_ax = self._live_fig.add_axes([0.07, 0.20, 0.93, 0.72])
+            ax_check = self._live_fig.add_axes([0.07, 0.03, 0.22, 0.10])
+            ax_check.set_facecolor("#f0f0f0")
             check = CheckButtons(ax_check, ["Past events"], [self._live_show_past])
             check.on_clicked(self._on_live_past_events_toggle)
             self.update_live_plot()
             plt.show(block=False)
             self._live_fig.canvas.draw()
+            self._live_fig.canvas.flush_events()
+            plt.pause(0.05)
+            self.logger.info("live plot opened (matplotlib backend %s)", matplotlib.get_backend())
         except Exception as exc:
             self.logger.warning("could not open live plot window: %s", exc)
             self.live_plot_enabled = False
@@ -525,9 +553,8 @@ class ScanMonitor:
         if not self._live_show_past:
             title += " — this session"
         draw_event_timeline(self._live_ax, self._events_for_live_plot(), title=title)
-        self._live_fig.autofmt_xdate()
-        self._live_fig.tight_layout()
         self._live_fig.canvas.draw_idle()
+        self._live_fig.canvas.flush_events()
 
     def write_outputs(self) -> None:
         self.write_scans_csv()
