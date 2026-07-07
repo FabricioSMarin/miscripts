@@ -39,7 +39,7 @@
       "comment": "Storage ring beam lost: S:ActualMode leaves user/top-up mode (4) and/or ring current collapses.",
       "inputs": [
         {"label": "actual_mode", "pv": "S:ActualMode"},
-        {"label": "desired_mode", "pv": "SS:DesiredMode"}
+        {"label": "desired_mode", "pv": "S:DesiredMode"}
       ]
     },
 
