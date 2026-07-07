@@ -5,7 +5,7 @@
     "output_dir_pv": "2xfm:saveData_fileSystem",
     "linux_data_mount": "/mnt/micdata1/2ide/",
     "environment_variables": {
-      "EPICS_CA_ADDR_LIST": "164.54.113.168"
+      "EPICS_CA_ADDR_LIST": "164.54.113.168 10.54.113.53"
     },
   
     "flag_confirm_s": 5.0,

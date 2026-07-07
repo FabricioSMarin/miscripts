@@ -11,6 +11,7 @@ across detectors (Xspress3, XMAP, ...).
 
 from __future__ import annotations
 
+import re
 from functools import wraps
 from types import SimpleNamespace
 from typing import Any, Callable, Optional
@@ -149,9 +150,18 @@ def _as_text(value: Any) -> str:
     return str(value).rstrip("\x00")
 
 
-def _scan_num_from_filename(name: Any) -> int:
-    suffix = str(name).rsplit("_", 1)[-1]
-    return int(suffix)
+def _scan_num_from_filename(name: Any) -> Optional[int]:
+    """Extract scan index from detector filename PV (e.g. ``8bmb_0031`` -> 31)."""
+    text = _as_text(name).strip()
+    if not text:
+        return None
+    suffix = text.rsplit("_", 1)[-1]
+    if suffix.isdigit():
+        return int(suffix)
+    matches = re.findall(r"\d+", text)
+    if not matches:
+        return None
+    return int(matches[-1])
 
 
 @flag_check
@@ -163,12 +173,17 @@ def write_error(ctx: SimpleNamespace) -> bool:
 @flag_check
 def filename_not_insync(ctx: SimpleNamespace) -> bool:
     """Detector filename PVs are out of sync with the scan."""
-    return (
-        int(ctx.scan_busy) == 1
-        and int(ctx.capture) == 1
-        and _scan_num_from_filename(ctx.detector_file_name) != int(ctx.next_scan_number) - 1
-        and int(ctx.detector_file_number) - 1 != int(ctx.scan_line)
-    )
+    if int(ctx.scan_busy) != 1 or int(ctx.capture) != 1:
+        return False
+    expected_scan = int(ctx.next_scan_number) - 1
+    line_mismatch = int(ctx.detector_file_number) - 1 != int(ctx.scan_line)
+    name_num = _scan_num_from_filename(ctx.detector_file_name)
+    if name_num is not None:
+        name_mismatch = name_num != expected_scan
+    else:
+        # XMAP FileName stem has no scan suffix (e.g. 2xfm_XMAP); use FileNumber.
+        name_mismatch = int(ctx.detector_file_number) != expected_scan
+    return name_mismatch and line_mismatch
 
 
 @flag_check
