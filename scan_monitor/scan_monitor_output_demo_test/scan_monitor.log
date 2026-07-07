@@ -1,0 +1,2 @@
+2026-07-07 12:25:31,039 INFO demo mode (no EPICS)
+2026-07-07 12:25:31,528 INFO demo outputs written: c:\Users\auranox\dev\miscripts\scan_monitor\scan_monitor_output_demo_test\scans.csv, c:\Users\auranox\dev\miscripts\scan_monitor\scan_monitor_output_demo_test\spreadsheet_view.png, c:\Users\auranox\dev\miscripts\scan_monitor\scan_monitor_output_demo_test\event_time_plot.png

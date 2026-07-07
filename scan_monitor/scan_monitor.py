@@ -49,6 +49,8 @@ if not os.environ.get("MPLBACKEND"):
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from matplotlib.figure import Figure
 from matplotlib.widgets import CheckButtons
 
 from scan_monitor_flags import FLAG_FUNCTIONS, marker_color
@@ -293,6 +295,7 @@ class ScanMonitor:
         self._live_fig: Any = None
         self._live_ax: Any = None
         self._plot_needs_update = False
+        self._outputs_pending = False
 
         self.log_path = self.output_dir / "scan_monitor.log"
         self.scans_csv_path = self.output_dir / "scans.csv"
@@ -359,7 +362,7 @@ class ScanMonitor:
                 scan_number=scan_number,
             )
         )
-        self.write_outputs()
+        self.request_outputs()
 
     def on_flag_event(self, flag_name: str, flag_values: dict[str, Any]) -> None:
         ts, iso_time = utc_now()
@@ -393,7 +396,7 @@ class ScanMonitor:
             scan_number,
             flag_values,
         )
-        self.write_outputs()
+        self.request_outputs()
 
     def evaluate_flags(self) -> None:
         """Poll each configured flag with two-check confirmation.
@@ -488,7 +491,9 @@ class ScanMonitor:
         if len(rows) <= 1:
             return
 
-        fig, ax = plt.subplots(figsize=(max(8, len(rows[0]) * 1.2), max(3, len(rows) * 0.45)))
+        fig = Figure(figsize=(max(8, len(rows[0]) * 1.2), max(3, len(rows) * 0.45)))
+        FigureCanvasAgg(fig)
+        ax = fig.add_subplot(111)
         ax.axis("off")
         table = ax.table(cellText=rows[1:], colLabels=rows[0], loc="center", cellLoc="left")
         table.auto_set_font_size(False)
@@ -497,19 +502,17 @@ class ScanMonitor:
         fig.suptitle("Scan parameter log", fontsize=12, y=0.98)
         fig.tight_layout()
         fig.savefig(self.spreadsheet_path, dpi=150, bbox_inches="tight")
-        plt.close(fig)
 
     def write_event_time_plot(self) -> None:
         with self._lock:
             events = list(self.timeline)
 
-        fig, ax = plt.subplots(figsize=(11, 4))
+        fig = Figure(figsize=(11, 4))
+        FigureCanvasAgg(fig)
+        ax = fig.add_subplot(111)
         draw_event_timeline(ax, events, title="Scan and flag event timeline")
-        if events:
-            fig.autofmt_xdate()
         fig.tight_layout()
         fig.savefig(self.event_plot_path, dpi=150, bbox_inches="tight")
-        plt.close(fig)
 
     def _events_for_live_plot(self) -> list[TimelineEvent]:
         with self._lock:
@@ -556,11 +559,31 @@ class ScanMonitor:
         self._live_fig.canvas.draw_idle()
         self._live_fig.canvas.flush_events()
 
+    def request_outputs(self) -> None:
+        """Schedule file/PNG writes on the main thread (safe from EPICS callbacks)."""
+        self._outputs_pending = True
+
     def write_outputs(self) -> None:
         self.write_scans_csv()
         self.write_spreadsheet_view()
         self.write_event_time_plot()
         self._plot_needs_update = True
+
+    def _process_pending_work(self) -> None:
+        if self._outputs_pending:
+            try:
+                self.write_outputs()
+            except Exception:
+                self.logger.exception("failed to write outputs")
+            self._outputs_pending = False
+        if self.live_plot_enabled and self._plot_needs_update:
+            try:
+                self.update_live_plot()
+            except Exception:
+                self.logger.exception("failed to update live plot")
+            self._plot_needs_update = False
+        if self.live_plot_enabled and self._live_fig is not None:
+            plt.pause(0.001)
 
     def _scan_started_callback(self, pvname: str, value: Any) -> None:
         previous = self._last_scan_started_values.get(pvname)
@@ -620,10 +643,9 @@ class ScanMonitor:
         self.logger.info("scan monitor running; Ctrl+C to stop")
         try:
             while True:
+                self._process_pending_work()
                 self.evaluate_flags()
-                if self.live_plot_enabled and self._plot_needs_update:
-                    self.update_live_plot()
-                    self._plot_needs_update = False
+                self._process_pending_work()
                 time.sleep(self.flag_poll_s)
         except KeyboardInterrupt:
             self.logger.info("stopped by user")

@@ -1,0 +1,4 @@
+iso_time,scan_number,Xnpts,Ynpts,Xstart,Xend,Xstep,Xcenter,Ystart,Yend,Ystep,Ycenter,saveData_message
+2026-07-07T18:00:43.844+00:00,101,101,51,-1.0,0.0,0.01,-0.5,-0.75,-0.25,0.01,-0.5,scan complete
+2026-07-07T18:01:13.844+00:00,102,101,51,-0.5,0.5,0.01,0.0,-0.25,0.25,0.01,0.0,scan complete
+2026-07-07T18:01:43.844+00:00,103,101,51,0.0,1.0,0.01,0.5,0.25,0.75,0.01,0.5,scan complete
