@@ -133,7 +133,7 @@
       "comment": "Xspress3 write error: the detector is in an error state and the HDF writer is not capturing.",
       "inputs": [
         {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
-        {"label": "write_status", "pv": "8bmbXP3:HDF1:WriteStatus_RBV"}
+        {"label": "write_status", "pv": "8bmbXP3:HDF1:WriteStatus"}
       ]
     },
 
