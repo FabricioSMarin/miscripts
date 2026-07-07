@@ -556,12 +556,16 @@ class ScanMonitor:
                 self.logger.warning("no flag function defined for %r; skipping", flag_name)
                 continue
 
+            inputs = spec.get("inputs", [])
+            if not inputs:
+                continue
+
             last = self._last_flag_fire.get(flag_name, 0.0)
             if now - last < self.flag_cooldown_s:
                 continue
 
             try:
-                context = read_labeled_pvs(spec.get("inputs", []))
+                context = read_labeled_pvs(inputs)
             except RuntimeError as exc:
                 self.logger.warning("could not read inputs for %s: %s", flag_name, exc)
                 continue

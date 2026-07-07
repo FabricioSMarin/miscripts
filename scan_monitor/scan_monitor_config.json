@@ -104,12 +104,12 @@
     },
 
     "xspress3_miss_trigger": {
-      "comment": "Xspress3 missed acquisition triggers: array_counter lags number_of_images while the detector is still in an acquiring state.",
+      "comment": "Xspress3 missed acquisition triggers: acq_counter lags acq_target while struck is done.",
       "inputs": [
         {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
-        {"label": "array_rate", "pv": "8bmbXP3:det1:ArrayRate_RBV"},
-        {"label": "array_num", "pv": "8bmbXP3:det1:NumImages_RBV"},
-        {"label": "array_counter", "pv": "8bmbXP3:det1:ArrayCounter_RBV"},
+        {"label": "acq_rate", "pv": "8bmbXP3:det1:ArrayRate_RBV"},
+        {"label": "acq_target", "pv": "8bmbXP3:det1:NumImages_RBV"},
+        {"label": "acq_counter", "pv": "8bmbXP3:det1:ArrayCounter_RBV"},
         {"label": "struck_current", "pv": "8bmb:3820:CurrentChannel"},
         {"label": "struck_all", "pv": "8bmb:3820:NuseAll"},
         {"label": "struck_acquiring", "pv": "8bmb:3820:Acquiring"}
@@ -120,7 +120,7 @@
       "comment": "Xspress3 number of saved frames differs from received triggers and the HDF writer remains capturing.",
       "inputs": [
         {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
-        {"label": "array_rate", "pv": "8bmbXP3:det1:ArrayRate_RBV"},
+        {"label": "acq_rate", "pv": "8bmbXP3:det1:ArrayRate_RBV"},
         {"label": "num_frames", "pv": "8bmbXP3:HDF1:NumCapture_RBV"},
         {"label": "saved_frames", "pv": "8bmbXP3:HDF1:NumCaptured_RBV"},
         {"label": "struck_current", "pv": "8bmb:3820:CurrentChannel"},
@@ -142,8 +142,8 @@
       "inputs": [
         {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
         {"label": "capture", "pv": "8bmbXP3:HDF1:Capture_RBV"},
-        {"label": "xp3_file_number", "pv": "8bmbXP3:HDF1:FileNumber"},
-        {"label": "xp3_file_name", "pv": "8bmbXP3:HDF1:FileName", "as": "string"},
+        {"label": "detector_file_number", "pv": "8bmbXP3:HDF1:FileNumber"},
+        {"label": "detector_file_name", "pv": "8bmbXP3:HDF1:FileName", "as": "string"},
         {"label": "scan_line", "pv": "8bmbsft:Fscan1.CPT"},
         {"label": "next_scan_number", "pv": "8bmbsft:saveData_scanNumber"}
       ]

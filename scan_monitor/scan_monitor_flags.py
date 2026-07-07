@@ -3,14 +3,10 @@
 Flag-event detectors for the EPICS scan monitor.
 
 Each function evaluates a combination of PV values and returns True when the
-corresponding fault condition is detected. This is where multi-PV logic lives:
-the JSON config cannot express "fault when PV_a and PV_b disagree", so instead
-the config lists each flag's input PVs and the monitor passes their current
-values here as ``context`` (a dict keyed by the labels in the config).
-
-``context`` keys are defined only in scan_monitor_config.json under each flag's
-``inputs``; the monitor builds the dict each poll. The ``@flag_check`` decorator
-converts that dict to a namespace so flag bodies use dot access (``ctx.scan_busy``).
+corresponding fault condition is detected. Beamline-specific PVs are listed in
+the JSON config under each flag's ``inputs``; shared logic uses common label
+names (``acq_counter``, ``detector_file_name``, etc.) so one function works
+across detectors (Xspress3, XMAP, ...).
 """
 
 from __future__ import annotations
@@ -32,6 +28,8 @@ RED_FLAGS = frozenset(
         "struck_stuck_acquiring",
         "xspress3_miss_trigger",
         "xspress3_lost_frame",
+        "xmap_miss_trigger",
+        "xmap_lost_frames",
         "filename_not_insync",
         "ioc_is_down",
         "stage_stuck",
@@ -60,6 +58,39 @@ def flag_check(fn: FlagLogic) -> FlagFunction:
     return wrapper
 
 
+def _struck_done(ctx: SimpleNamespace) -> bool:
+    return int(ctx.struck_acquiring) == 0 and int(ctx.struck_current) == int(ctx.struck_all)
+
+
+def _acq_miss_trigger(
+    ctx: SimpleNamespace,
+    *,
+    counter: str = "acq_counter",
+    target: str = "acq_target",
+    rate: str | None = "acq_rate",
+) -> bool:
+    if int(ctx.scan_busy) != 1:
+        return False
+    if rate is not None and int(getattr(ctx, rate)) != 0:
+        return False
+    return (
+        int(getattr(ctx, counter)) != int(getattr(ctx, target))
+        and _struck_done(ctx)
+    )
+
+
+def _lost_frames_trigger(
+    ctx: SimpleNamespace,
+    *,
+    rate: str | None = "acq_rate",
+) -> bool:
+    if int(ctx.scan_busy) != 1:
+        return False
+    if rate is not None and int(getattr(ctx, rate)) != 0:
+        return False
+    return int(ctx.num_frames) != int(ctx.saved_frames) and _struck_done(ctx)
+
+
 @flag_check
 def struck_miss_trigger(ctx: SimpleNamespace) -> bool:
     """Struck 3820 still acquiring and missing triggers after stage motion done."""
@@ -68,7 +99,7 @@ def struck_miss_trigger(ctx: SimpleNamespace) -> bool:
         and int(ctx.acquiring) == 1
         and int(ctx.current_channel) != int(ctx.nuse_all)
         and int(ctx.current_channel) > 0
-        and (float(ctx.elapsed_time)) > (8 + ctx.dwell_time * ctx.nuse_all / 1000)
+        and float(ctx.elapsed_time) > (8 + ctx.dwell_time * ctx.nuse_all / 1000)
     )
 
 
@@ -85,25 +116,26 @@ def struck_stuck_acquiring(ctx: SimpleNamespace) -> bool:
 @flag_check
 def xspress3_miss_trigger(ctx: SimpleNamespace) -> bool:
     """Xspress3 missed an expected acquisition trigger."""
-    return (
-        int(ctx.scan_busy) == 1
-        and int(ctx.array_rate) == 0
-        and int(ctx.array_counter) != int(ctx.array_num)
-        and int(ctx.struck_acquiring) == 0
-        and int(ctx.struck_current) == int(ctx.struck_all)
-    )
+    return _acq_miss_trigger(ctx)
 
 
 @flag_check
 def xspress3_lost_frame(ctx: SimpleNamespace) -> bool:
     """Xspress3 saved-frame count differs from received triggers while capturing."""
-    return (
-        int(ctx.scan_busy) == 1
-        and int(ctx.array_rate) == 0
-        and int(ctx.num_frames) != int(ctx.saved_frames)
-        and int(ctx.struck_acquiring) == 0
-        and int(ctx.struck_current) == int(ctx.struck_all)
-    )
+    return _lost_frames_trigger(ctx)
+
+
+@flag_check
+def xmap_miss_trigger(ctx: SimpleNamespace) -> bool:
+    """XMAP missed triggers: pixel counter lags pixels-per-run."""
+    return _acq_miss_trigger(ctx, rate=None)
+
+
+@flag_check
+def xmap_lost_frames(ctx: SimpleNamespace) -> bool:
+    """XMAP saved-frame count differs from expected while scan is active."""
+    return _lost_frames_trigger(ctx, rate=None)
+
 
 def _as_text(value: Any) -> str:
     if isinstance(value, str):
@@ -121,20 +153,21 @@ def _scan_num_from_filename(name: Any) -> int:
     suffix = str(name).rsplit("_", 1)[-1]
     return int(suffix)
 
+
 @flag_check
 def write_error(ctx: SimpleNamespace) -> bool:
-    """Xspress3 write error: the detector is in an error state and the HDF writer is not capturing."""
+    """Detector writer error while scan is active."""
     return int(ctx.scan_busy) == 1 and int(ctx.write_status) == 1
 
 
 @flag_check
 def filename_not_insync(ctx: SimpleNamespace) -> bool:
-    """Area detector / xspress3 filename PVs are out of sync with the scan."""
+    """Detector filename PVs are out of sync with the scan."""
     return (
         int(ctx.scan_busy) == 1
         and int(ctx.capture) == 1
-        and _scan_num_from_filename(ctx.xp3_file_name) != int(ctx.next_scan_number) - 1
-        and int(ctx.xp3_file_number) - 1 != int(ctx.scan_line)
+        and _scan_num_from_filename(ctx.detector_file_name) != int(ctx.next_scan_number) - 1
+        and int(ctx.detector_file_number) - 1 != int(ctx.scan_line)
     )
 
 
@@ -223,6 +256,8 @@ FLAG_FUNCTIONS: dict[str, FlagFunction] = {
     "struck_stuck_acquiring": struck_stuck_acquiring,
     "xspress3_miss_trigger": xspress3_miss_trigger,
     "xspress3_lost_frame": xspress3_lost_frame,
+    "xmap_miss_trigger": xmap_miss_trigger,
+    "xmap_lost_frames": xmap_lost_frames,
     "write_error": write_error,
     "filename_not_insync": filename_not_insync,
     "beam_dump": beam_dump,
