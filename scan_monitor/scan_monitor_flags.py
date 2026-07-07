@@ -132,7 +132,7 @@ def filename_not_insync(ctx: SimpleNamespace) -> bool:
     return (
         int(ctx.scan_busy) == 1
         and int(ctx.capture) == 1
-        and _scan_num_from_filename(ctx.xp3_file_name) != int(ctx.mda_scan_number) - 1
+        and _scan_num_from_filename(ctx.xp3_file_name) != int(ctx.next_scan_number) - 1
         and int(ctx.xp3_file_number) - 1 != int(ctx.scan_line)
     )
 

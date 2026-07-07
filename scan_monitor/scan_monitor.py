@@ -11,7 +11,7 @@ Reads PV definitions from a JSON config with these sections:
   - flag_events: diagnostic-snapshot PVs logged when any flag fires
   - environment_variables: process env vars applied before EPICS connects
 
-Outputs (written to output_dir from config):
+Outputs (written under ``<output_dir_pv>/scan_monitor_output`` unless overridden):
   - scan_monitor.log          session text log
   - scans.csv                 one row per completed 2D scan
   - flag_events.jsonl         one record per flag event
@@ -140,6 +140,32 @@ def pv_value(pv_name: str, *, as_string: bool = False) -> Any:
     return value
 
 
+def read_output_base_path(config: dict[str, Any]) -> Path | None:
+    """Read the filesystem base path from ``output_dir_pv``, or None if unset."""
+    output_dir_pv = config.get("output_dir_pv")
+    if not output_dir_pv:
+        return None
+    return Path(coerce_pv_string(pv_value(str(output_dir_pv), as_string=True))).expanduser()
+
+
+def resolve_output_dir(config: dict[str, Any], override: Path | None = None) -> Path:
+    """Return the monitor output directory, creating it if needed.
+
+    Default: read ``output_dir_pv`` from *config*, append ``scan_monitor_output``,
+    and mkdir -p. *override* bypasses the PV lookup (for ``--output-dir``).
+    """
+    if override is not None:
+        output_dir = override
+    else:
+        base = read_output_base_path(config)
+        if base is not None:
+            output_dir = base / "scan_monitor_output"
+        else:
+            output_dir = Path(config.get("output_dir", "scan_monitor_output"))
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return output_dir
+
+
 def read_labeled_pvs(entries: list[dict[str, Any]]) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for entry in entries:
@@ -226,6 +252,37 @@ def load_past_timeline_events(output_dir: Path) -> list[TimelineEvent]:
     return events
 
 
+def load_past_scans(output_dir: Path) -> list[ScanRecord]:
+    """Rebuild scan records from a prior ``scans.csv`` in *output_dir*."""
+    scans_csv = output_dir / "scans.csv"
+    if not scans_csv.exists():
+        return []
+
+    scans: list[ScanRecord] = []
+    with scans_csv.open(newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            iso_time = row.get("iso_time", "")
+            if not iso_time:
+                continue
+            try:
+                timestamp = datetime.fromisoformat(iso_time).timestamp()
+            except ValueError:
+                continue
+            scan_number = str(row.get("scan_number", "?"))
+            parameters = {
+                k: v for k, v in row.items() if k not in ("iso_time", "scan_number")
+            }
+            scans.append(
+                ScanRecord(
+                    timestamp=timestamp,
+                    iso_time=iso_time,
+                    scan_number=scan_number,
+                    parameters=parameters,
+                )
+            )
+    return scans
+
+
 def draw_event_timeline(ax: Any, events: list[TimelineEvent], *, title: str) -> None:
     ax.clear()
     ax.set_facecolor("white")
@@ -273,10 +330,16 @@ class ScanMonitor:
         *,
         live_plot: bool = True,
         live_plot_show_past: bool = False,
+        output_dir_override: bool = False,
     ) -> None:
         self.config = config
         self.output_dir = output_dir
         self.output_dir.mkdir(parents=True, exist_ok=True)
+        self._output_dir_override = output_dir_override
+        if output_dir_override or not config.get("output_dir_pv"):
+            self._output_base_path = None
+        else:
+            self._output_base_path = output_dir.parent.resolve()
 
         self.scan_number_pv = config.get("scan_number_pv", "SCAN:NN")
         self.scans: list[ScanRecord] = []
@@ -297,14 +360,16 @@ class ScanMonitor:
         self._plot_needs_update = False
         self._outputs_pending = False
 
-        self.log_path = self.output_dir / "scan_monitor.log"
-        self.scans_csv_path = self.output_dir / "scans.csv"
-        self.flag_events_path = self.output_dir / "flag_events.jsonl"
-        self.spreadsheet_path = self.output_dir / "spreadsheet_view.png"
-        self.event_plot_path = self.output_dir / "event_time_plot.png"
-
-        self._load_past_timeline()
+        self._update_output_paths()
+        self._load_past_session()
         self._setup_logging()
+
+    def _load_past_scans(self) -> None:
+        past = load_past_scans(self.output_dir)
+        if not past:
+            return
+        with self._lock:
+            self.scans.extend(past)
 
     def _load_past_timeline(self) -> None:
         past = load_past_timeline_events(self.output_dir)
@@ -313,6 +378,10 @@ class ScanMonitor:
         with self._lock:
             self.timeline.extend(past)
             self.timeline.sort(key=lambda event: event.timestamp)
+
+    def _load_past_session(self) -> None:
+        self._load_past_scans()
+        self._load_past_timeline()
 
     def _setup_logging(self) -> None:
         self.logger = logging.getLogger("scan_monitor")
@@ -326,6 +395,43 @@ class ScanMonitor:
         self.logger.addHandler(fh)
         self.logger.addHandler(sh)
 
+    def _update_output_paths(self) -> None:
+        self.log_path = self.output_dir / "scan_monitor.log"
+        self.scans_csv_path = self.output_dir / "scans.csv"
+        self.flag_events_path = self.output_dir / "flag_events.jsonl"
+        self.spreadsheet_path = self.output_dir / "spreadsheet_view.png"
+        self.event_plot_path = self.output_dir / "event_time_plot.png"
+
+    def _switch_output_dir(self, base: Path) -> None:
+        """Point outputs at *base*/scan_monitor_output and start a fresh session there."""
+        new_output_dir = base / "scan_monitor_output"
+        new_output_dir.mkdir(parents=True, exist_ok=True)
+        with self._lock:
+            self.output_dir = new_output_dir
+            self._output_base_path = base
+            self.scans.clear()
+            self.timeline.clear()
+        self._update_output_paths()
+        self._load_past_session()
+        self._setup_logging()
+        self._plot_needs_update = True
+        self.logger.info("switched output directory to %s", self.output_dir)
+
+    def _maybe_switch_output_dir_on_scan_start(self) -> None:
+        """When ``output_dir_pv`` changes, relocate outputs on the next scan start."""
+        if self._output_dir_override or not self.config.get("output_dir_pv"):
+            return
+        try:
+            base = read_output_base_path(self.config)
+        except RuntimeError as exc:
+            self.logger.warning("could not read output_dir_pv on scan start: %s", exc)
+            return
+        if base is None:
+            return
+        if self._output_base_path is not None and base.resolve() == self._output_base_path.resolve():
+            return
+        self._switch_output_dir(base)
+
     def _append_timeline(self, event: TimelineEvent) -> None:
         with self._lock:
             self.timeline.append(event)
@@ -337,10 +443,44 @@ class ScanMonitor:
             value = "?"
         return str(value)
 
+    def _scan_active_now(self) -> bool:
+        """True when scan_started PVs indicate a scan is already in progress."""
+        for rule in self.config["scan_started"]:
+            pv = rule["pv"]
+            when = rule.get("when", "changed")
+            expected = rule.get("value")
+            current = self._last_scan_started_values.get(pv)
+            if current is None:
+                try:
+                    current = pv_value(pv)
+                except RuntimeError:
+                    return False
+            if when == "eq":
+                if current != expected:
+                    return False
+            else:
+                return False
+        return bool(self.config["scan_started"])
+
+    def _maybe_record_ongoing_scan_at_launch(self) -> None:
+        """If a scan is already running when the monitor starts, log it once."""
+        if not self._scan_active_now():
+            return
+        scan_number = self._read_scan_number()
+        with self._lock:
+            if any(scan.scan_number == scan_number for scan in self.scans):
+                self.logger.info(
+                    "ongoing scan %s at launch already present in scans.csv", scan_number
+                )
+                return
+        self.logger.info("ongoing scan detected at launch: scan_number=%s", scan_number)
+        self.on_scan_started()
+
     def on_scan_started(self) -> None:
+        self._maybe_switch_output_dir_on_scan_start()
         ts, iso_time = utc_now()
         parameters = read_labeled_pvs(self.config["scan_parameters"])
-        scan_number = str(parameters.get("scan_number", self._read_scan_number()))
+        scan_number = str(parameters.get("next_scan_number", self._read_scan_number()))
 
         record = ScanRecord(
             timestamp=ts,
@@ -647,6 +787,7 @@ class ScanMonitor:
         if self.live_plot_enabled:
             self.start_live_plot()
         self.start_epics_monitoring()
+        self._maybe_record_ongoing_scan_at_launch()
         self.logger.info("scan monitor running; Ctrl+C to stop")
         try:
             while True:
@@ -671,7 +812,7 @@ def run_demo(output_dir: Path) -> None:
         "scan_number_pv": "8bmbsft:saveData_scanNumber",
         "scan_started": [{"pv": "8bmbsft:Fscan1.BUSY", "when": "eq", "value": 1}],
         "scan_parameters": [
-            {"label": "scan_number", "pv": "8bmbsft:saveData_scanNumber"},
+            {"label": "next_scan_number", "pv": "8bmbsft:saveData_scanNumber"},
             {"label": "Xnpts", "pv": "8bmbsft:FscanH.NPTS"},
             {"label": "Ynpts", "pv": "8bmbsft:FscanH.NPTS"},
             {"label": "Xstart", "pv": "8bmbsft:FscanH.P1SP"},
@@ -708,7 +849,7 @@ def run_demo(output_dir: Path) -> None:
                 iso_time=iso,
                 scan_number=str(scan_num),
                 parameters={
-                    "scan_number": scan_num,
+                    "next_scan_number": scan_num,
                     "Xnpts": 101,
                     "Ynpts": 51,
                     "Xstart": round(center - 0.5, 3),
@@ -829,7 +970,7 @@ def main() -> None:
         "--output-dir",
         type=Path,
         default=None,
-        help="override output_dir from config",
+        help="override output directory (default: <output_dir_pv>/scan_monitor_output)",
     )
     parser.add_argument(
         "--demo",
@@ -855,12 +996,13 @@ def main() -> None:
 
     config = load_config(args.config)
     apply_environment_variables(config.get("environment_variables"))
-    output_dir = args.output_dir or Path(config.get("output_dir", "scan_monitor_output"))
+    output_dir = resolve_output_dir(config, args.output_dir)
     monitor = ScanMonitor(
         config,
         output_dir,
         live_plot=not args.no_live_plot,
         live_plot_show_past=args.plot_past_events,
+        output_dir_override=args.output_dir is not None,
     )
     monitor.run()
 

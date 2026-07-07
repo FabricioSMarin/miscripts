@@ -20,7 +20,8 @@
   ],
 
   "scan_parameters": [
-    {"label": "scan_number", "pv": "8bmbsft:saveData_scanNumber"},
+    {"label": "saveData_message", "pv": "8bmbsft:saveData_message"},
+    {"label": "next_scan_number", "pv": "8bmbsft:saveData_scanNumber"},
     {"label": "dwell_time", "pv": "8bmb:Flyscans:Setup:DwellTime.VAL"},
     {"label": "Xnpts", "pv": "8bmbsft:FscanH.NPTS"},
     {"label": "Ynpts", "pv": "8bmbsft:Fscan1.NPTS"},
@@ -33,8 +34,7 @@
     {"label": "Yend", "pv": "8bmbsft:Fscan1.P1EP"},
     {"label": "Ystep", "pv": "8bmbsft:Fscan1.P1SI"},
     {"label": "Ywidth", "pv": "8bmbsft:Fscan1.P1WD"},
-    {"label": "Ycenter", "pv": "8bmbsft:Fscan1.P1CP"},
-    {"label": "saveData_message", "pv": "8bmbsft:saveData_message"}
+    {"label": "Ycenter", "pv": "8bmbsft:Fscan1.P1CP"}
   ],
 
   "flags": {
@@ -145,7 +145,7 @@
         {"label": "xp3_file_number", "pv": "8bmbXP3:HDF1:FileNumber"},
         {"label": "xp3_file_name", "pv": "8bmbXP3:HDF1:FileName", "as": "string"},
         {"label": "scan_line", "pv": "8bmbsft:Fscan1.CPT"},
-        {"label": "mda_scan_number", "pv": "8bmbsft:saveData_scanNumber"}
+        {"label": "next_scan_number", "pv": "8bmbsft:saveData_scanNumber"}
       ]
     },
 
