@@ -93,10 +93,33 @@ def ensure_epics() -> Any:
     return epics
 
 
-def pv_value(pv_name: str) -> Any:
-    value = ensure_epics().caget(pv_name, timeout=2.0)
+def coerce_pv_string(value: Any) -> str:
+    """Decode EPICS string/waveform PV values to a plain str."""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value.rstrip("\x00")
+    if isinstance(value, (bytes, bytearray)):
+        return value.decode("utf-8", errors="replace").rstrip("\x00")
+    try:
+        seq = value.tolist() if hasattr(value, "tolist") else value
+        if isinstance(seq, (list, tuple)) and seq and isinstance(seq[0], (int, float)):
+            return "".join(chr(int(c)) for c in seq if int(c) != 0)
+    except (TypeError, ValueError):
+        pass
+    return str(value).rstrip("\x00")
+
+
+def pv_value(pv_name: str, *, as_string: bool = False) -> Any:
+    ep = ensure_epics()
+    if as_string:
+        value = ep.caget(pv_name, timeout=2.0, as_string=True)
+    else:
+        value = ep.caget(pv_name, timeout=2.0)
     if value is None:
         raise RuntimeError(f"failed to read PV {pv_name!r}")
+    if as_string:
+        return coerce_pv_string(value)
     return value
 
 
@@ -104,7 +127,7 @@ def read_labeled_pvs(entries: list[dict[str, Any]]) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for entry in entries:
         label = entry.get("label") or entry["pv"]
-        out[label] = pv_value(entry["pv"])
+        out[label] = pv_value(entry["pv"], as_string=entry.get("as") == "string")
     return out
 
 
