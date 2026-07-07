@@ -3,6 +3,7 @@
   
     "scan_number_pv": "8bmbsft:saveData_scanNumber",
     "output_dir_pv": "8bmbsft:saveData_fileSystem",
+    "linux_data_mount": "/mnt/micdata1/8bmb/",
   
     "environment_variables": {
       "EPICS_CA_ADDR_LIST": "10.54.108.4"

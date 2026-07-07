@@ -10,6 +10,7 @@ Reads PV definitions from a JSON config with these sections:
     the multi-PV calculation and returns True on a fault
   - flag_events: diagnostic-snapshot PVs logged when any flag fires
   - environment_variables: process env vars applied before EPICS connects
+  - linux_data_mount: optional local mount prefix aligned with output_dir_pv
 
 Outputs (written under ``<output_dir_pv>/scan_monitor_output`` unless overridden):
   - scan_monitor.log          session text log
@@ -140,12 +141,49 @@ def pv_value(pv_name: str, *, as_string: bool = False) -> Any:
     return value
 
 
+def _path_parts(path: str) -> list[str]:
+    """Split a filesystem path into non-empty components."""
+    return [part for part in path.replace("\\", "/").split("/") if part]
+
+
+def combine_linux_mount_path(linux_mount: str, remote_path: str) -> Path:
+    """Map a PV filesystem path onto the local Linux mount.
+
+    When the PV returns a Windows/UNC path (e.g. ``//micdata/data1/2ide/...``) and
+    the monitor runs on Linux (e.g. ``/mnt/micdata1/2ide/``), align on the longest
+    matching path-component sequence and keep the Linux prefix plus any trailing
+    PV suffix. Example::
+
+        /mnt/micdata1/2ide/  +  //micdata/data1/2ide/2026-2/Plant-As2
+        -> /mnt/micdata1/2ide/2026-2/Plant-As2
+    """
+    mount_parts = _path_parts(linux_mount)
+    remote_parts = _path_parts(remote_path)
+    if not mount_parts:
+        return Path(remote_path).expanduser()
+    if not remote_parts:
+        return Path(linux_mount).expanduser()
+
+    for overlap in range(min(len(mount_parts), len(remote_parts)), 0, -1):
+        suffix = mount_parts[-overlap:]
+        for start in range(len(remote_parts) - overlap + 1):
+            if remote_parts[start : start + overlap] == suffix:
+                combined = mount_parts + remote_parts[start + overlap :]
+                return Path("/" + "/".join(combined))
+
+    return Path(linux_mount).expanduser() / Path(*remote_parts)
+
+
 def read_output_base_path(config: dict[str, Any]) -> Path | None:
     """Read the filesystem base path from ``output_dir_pv``, or None if unset."""
     output_dir_pv = config.get("output_dir_pv")
     if not output_dir_pv:
         return None
-    return Path(coerce_pv_string(pv_value(str(output_dir_pv), as_string=True))).expanduser()
+    remote = coerce_pv_string(pv_value(str(output_dir_pv), as_string=True))
+    linux_mount = config.get("linux_data_mount")
+    if linux_mount:
+        return combine_linux_mount_path(str(linux_mount), remote)
+    return Path(remote).expanduser()
 
 
 def resolve_output_dir(config: dict[str, Any], override: Path | None = None) -> Path:
