@@ -35,6 +35,7 @@ RED_FLAGS = frozenset(
         "filename_not_insync",
         "ioc_is_down",
         "stage_stuck",
+        "write_error",
     }
 )
 
@@ -123,7 +124,7 @@ def _scan_num_from_filename(name: Any) -> int:
 @flag_check
 def write_error(ctx: SimpleNamespace) -> bool:
     """Xspress3 write error: the detector is in an error state and the HDF writer is not capturing."""
-    return int(ctx.scan_busy) == 1 and int(ctx.write_status) != 0
+    return int(ctx.scan_busy) == 1 and int(ctx.write_status) == 1
 
 
 @flag_check
