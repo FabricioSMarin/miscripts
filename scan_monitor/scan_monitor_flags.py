@@ -223,6 +223,7 @@ FLAG_FUNCTIONS: dict[str, FlagFunction] = {
     "struck_stuck_acquiring": struck_stuck_acquiring,
     "xspress3_miss_trigger": xspress3_miss_trigger,
     "xspress3_lost_frame": xspress3_lost_frame,
+    "write_error": write_error,
     "filename_not_insync": filename_not_insync,
     "beam_dump": beam_dump,
     "ioc_is_down": ioc_is_down,
