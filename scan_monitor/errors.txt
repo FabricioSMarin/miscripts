@@ -1,40 +1,25 @@
-(py312) bash-5.1$ python scan_monitor.py 
-2026-07-07 11:44:58,237 INFO monitoring 46 PVs; outputs in scan_monitor_output
-2026-07-07 11:44:58,237 INFO scan monitor running; Ctrl+C to stop
-2026-07-07 11:44:58,240 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
-Traceback (most recent call last):
-  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
-    fired = check(context)
-            ^^^^^^^^^^^^^^
-  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
-    return fn(SimpleNamespace(**context))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
-    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
-2026-07-07 11:44:59,245 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
-Traceback (most recent call last):
-  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
-    fired = check(context)
-            ^^^^^^^^^^^^^^
-  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
-    return fn(SimpleNamespace(**context))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
-    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
-2026-07-07 11:45:00,248 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
-Traceback (most recent call last):
-  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
-    fired = check(context)
-            ^^^^^^^^^^^^^^
-  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
-    return fn(SimpleNamespace(**context))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
-    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
-^C2026-07-07 11:45:00,609 INFO stopped by user
+py312) bash-5.1$ python scan_monitor.py 
+qt.qpa.theme.dbus: Session DBus not running.
+qt.qpa.theme.dbus: Application will not react to setting changes.
+ Check your DBus installation.
+qt.qpa.theme.gnome: dbus connection failed. Last error:  QDBusError("org.freedesktop.DBus.Error.AccessDenied", "Failed to connect to socket /run/user/1438/bus: Permission denied")
+
+(python:2489969): dbind-WARNING **: 12:26:39.581: Couldn't register with accessibility bus: Did not receive a reply. Possible causes include: the remote application did not send a reply, the message bus security policy blocked the reply, the reply timeout expired, or the network connection was broken.
+
+(python:2489969): Gtk-WARNING **: 12:26:39.601: GTK+ module /usr/lib64/gtk-2.0/modules/libcanberra-gtk-module.so cannot be loaded.
+GTK+ 2.x symbols detected. Using GTK+ 2.x and GTK+ 3 in the same process is not supported.
+Gtk-Message: 12:26:39.601: Failed to load module "canberra-gtk-module"
+
+(python:2489969): Gtk-WARNING **: 12:26:39.602: GTK+ module /usr/lib64/gtk-2.0/modules/libcanberra-gtk-module.so cannot be loaded.
+GTK+ 2.x symbols detected. Using GTK+ 2.x and GTK+ 3 in the same process is not supported.
+Gtk-Message: 12:26:39.602: Failed to load module "canberra-gtk-module"
+qt.qpa.theme.dbus: Session DBus not running.
+qt.qpa.theme.dbus: Application will not react to setting changes.
+ Check your DBus installation.
+qt.qpa.theme.gnome: dbus connection failed. Last error:  QDBusError("org.freedesktop.DBus.Error.AccessDenied", "Failed to connect to socket /run/user/1438/bus: Permission denied")
+/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py:529: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  self._live_fig.tight_layout()
+2026-07-07 12:26:41,379 INFO monitoring 46 PVs; outputs in scan_monitor_output
+2026-07-07 12:26:41,379 INFO scan monitor running; Ctrl+C to stop
+^C2026-07-07 12:27:06,030 INFO stopped by user
+(py312) bash-5.1$ 
