@@ -84,7 +84,7 @@ def xspress3_miss_trigger(ctx: SimpleNamespace) -> bool:
     return (
         int(ctx.scan_busy) == 1
         and int(ctx.array_rate) == 0
-        and int(ctx.array_counter) != int(ctx.num_frames)
+        and int(ctx.array_counter) != int(ctx.array_num)
         and int(ctx.struck_acquiring) == 0
         and int(ctx.struck_current) == int(ctx.struck_all)
     )

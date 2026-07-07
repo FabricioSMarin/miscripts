@@ -357,3 +357,126 @@ Traceback (most recent call last):
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
 2026-07-07 11:45:00,609 INFO stopped by user
+2026-07-07 11:52:55,404 INFO monitoring 46 PVs; outputs in scan_monitor_output
+2026-07-07 11:52:55,405 INFO scan monitor running; Ctrl+C to stop
+2026-07-07 11:52:55,408 WARNING flag event: struck_miss_trigger scan_number=32 values={'scan_execute': 1, 'acquiring': 1, 'elapsed_real': 30.49999998, 'nuse_all': 1175, 'current_channel': 971, 'number_of_images': 1174, 'array_counter': 970, 'detector_state': 1, 'trigger_mode': 3, 'capture': 1, 'full_file_name': '/mnt/micdata1/8bm/2026-2/Jakes/flyXRF/8bmb_0031_92.hdf5', 'file_path_exists': 1, 'array_rate': 34.0, 'requested_position': 66.05, 'actual_position': 61.93, 'velocity': 0.6666666666666667, 'vmax': 5.0403225806452, 'beam_current': 199.97216742266784, 'actual_mode': 4}
+2026-07-07 11:53:01,338 WARNING flag event: struck_miss_trigger scan_number=32 values={'scan_execute': 1, 'acquiring': 1, 'elapsed_real': 36.433333316, 'nuse_all': 1175, 'current_channel': 1168, 'number_of_images': 1174, 'array_counter': 1166, 'detector_state': 1, 'trigger_mode': 3, 'capture': 1, 'full_file_name': '/mnt/micdata1/8bm/2026-2/Jakes/flyXRF/8bmb_0031_92.hdf5', 'file_path_exists': 1, 'array_rate': 33.0, 'requested_position': 66.05, 'actual_position': 65.86, 'velocity': 0.6666666666666667, 'vmax': 5.0403225806452, 'beam_current': 199.91326701041444, 'actual_mode': 4}
+2026-07-07 11:53:04,449 ERROR flag check failed for xspress3_miss_trigger: 'types.SimpleNamespace' object has no attribute 'num_frames'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 292, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 87, in xspress3_miss_trigger
+    and int(ctx.array_counter) != int(ctx.num_frames)
+                                      ^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'num_frames'
+2026-07-07 11:53:05,454 ERROR flag check failed for xspress3_miss_trigger: 'types.SimpleNamespace' object has no attribute 'num_frames'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 292, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 87, in xspress3_miss_trigger
+    and int(ctx.array_counter) != int(ctx.num_frames)
+                                      ^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'num_frames'
+2026-07-07 11:53:06,458 ERROR flag check failed for xspress3_miss_trigger: 'types.SimpleNamespace' object has no attribute 'num_frames'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 292, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 87, in xspress3_miss_trigger
+    and int(ctx.array_counter) != int(ctx.num_frames)
+                                      ^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'num_frames'
+2026-07-07 11:53:07,462 ERROR flag check failed for xspress3_miss_trigger: 'types.SimpleNamespace' object has no attribute 'num_frames'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 292, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 87, in xspress3_miss_trigger
+    and int(ctx.array_counter) != int(ctx.num_frames)
+                                      ^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'num_frames'
+2026-07-07 11:53:08,466 ERROR flag check failed for xspress3_miss_trigger: 'types.SimpleNamespace' object has no attribute 'num_frames'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 292, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 87, in xspress3_miss_trigger
+    and int(ctx.array_counter) != int(ctx.num_frames)
+                                      ^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'num_frames'
+2026-07-07 11:53:09,470 ERROR flag check failed for xspress3_miss_trigger: 'types.SimpleNamespace' object has no attribute 'num_frames'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 292, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 87, in xspress3_miss_trigger
+    and int(ctx.array_counter) != int(ctx.num_frames)
+                                      ^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'num_frames'
+2026-07-07 11:53:09,785 INFO stopped by user
+2026-07-07 11:53:37,335 INFO monitoring 46 PVs; outputs in scan_monitor_output
+2026-07-07 11:53:37,335 INFO scan monitor running; Ctrl+C to stop
+2026-07-07 11:53:37,340 WARNING flag event: struck_miss_trigger scan_number=32 values={'scan_execute': 1, 'acquiring': 1, 'elapsed_real': 29.633333348, 'nuse_all': 1175, 'current_channel': 942, 'number_of_images': 1174, 'array_counter': 940, 'detector_state': 1, 'trigger_mode': 3, 'capture': 1, 'full_file_name': '/mnt/micdata1/8bm/2026-2/Jakes/flyXRF/8bmb_0031_93.hdf5', 'file_path_exists': 1, 'array_rate': 35.0, 'requested_position': 66.05, 'actual_position': 61.33, 'velocity': 0.6666666666666667, 'vmax': 5.0403225806452, 'beam_current': 199.9521576646503, 'actual_mode': 4}
+2026-07-07 11:53:42,695 WARNING flag event: struck_miss_trigger scan_number=32 values={'scan_execute': 1, 'acquiring': 1, 'elapsed_real': 34.983333334, 'nuse_all': 1175, 'current_channel': 1120, 'number_of_images': 1174, 'array_counter': 1119, 'detector_state': 1, 'trigger_mode': 3, 'capture': 1, 'full_file_name': '/mnt/micdata1/8bm/2026-2/Jakes/flyXRF/8bmb_0031_93.hdf5', 'file_path_exists': 1, 'array_rate': 33.0, 'requested_position': 66.05, 'actual_position': 64.9275, 'velocity': 0.6666666666666667, 'vmax': 5.0403225806452, 'beam_current': 199.8928838600861, 'actual_mode': 4}
+2026-07-07 11:53:45,798 ERROR flag check failed for xspress3_miss_trigger: 'types.SimpleNamespace' object has no attribute 'num_frames'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 292, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 87, in xspress3_miss_trigger
+    and int(ctx.array_counter) != int(ctx.num_frames)
+                                      ^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'num_frames'
+2026-07-07 11:53:46,803 ERROR flag check failed for xspress3_miss_trigger: 'types.SimpleNamespace' object has no attribute 'num_frames'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 292, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 87, in xspress3_miss_trigger
+    and int(ctx.array_counter) != int(ctx.num_frames)
+                                      ^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'num_frames'
+2026-07-07 11:53:47,807 ERROR flag check failed for xspress3_miss_trigger: 'types.SimpleNamespace' object has no attribute 'num_frames'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 292, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 87, in xspress3_miss_trigger
+    and int(ctx.array_counter) != int(ctx.num_frames)
+                                      ^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'num_frames'
+2026-07-07 11:53:48,243 INFO stopped by user
+2026-07-07 11:56:52,766 INFO monitoring 46 PVs; outputs in scan_monitor_output
+2026-07-07 11:56:52,767 INFO scan monitor running; Ctrl+C to stop
+2026-07-07 11:57:09,828 WARNING flag event: struck_miss_trigger scan_number=32 values={'scan_execute': 1, 'acquiring': 1, 'elapsed_real': 28.116666662, 'nuse_all': 1175, 'current_channel': 891, 'number_of_images': 1174, 'array_counter': 890, 'detector_state': 1, 'trigger_mode': 3, 'capture': 1, 'full_file_name': '/mnt/micdata1/8bm/2026-2/Jakes/flyXRF/8bmb_0031_98.hdf5', 'file_path_exists': 1, 'array_rate': 32.0, 'requested_position': 66.05, 'actual_position': 60.331250000000004, 'velocity': 0.6666666666666667, 'vmax': 5.0403225806452, 'beam_current': 199.89496946836465, 'actual_mode': 4}
+2026-07-07 11:57:15,167 WARNING flag event: struck_miss_trigger scan_number=32 values={'scan_execute': 1, 'acquiring': 1, 'elapsed_real': 33.466666688, 'nuse_all': 1175, 'current_channel': 1070, 'number_of_images': 1174, 'array_counter': 1068, 'detector_state': 1, 'trigger_mode': 3, 'capture': 1, 'full_file_name': '/mnt/micdata1/8bm/2026-2/Jakes/flyXRF/8bmb_0031_98.hdf5', 'file_path_exists': 1, 'array_rate': 34.0, 'requested_position': 66.05, 'actual_position': 63.93, 'velocity': 0.6666666666666667, 'vmax': 5.0403225806452, 'beam_current': 199.84551954883065, 'actual_mode': 4}
+2026-07-07 11:57:35,177 INFO stopped by user
