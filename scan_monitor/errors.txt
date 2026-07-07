@@ -1,25 +1,37 @@
-py312) bash-5.1$ python scan_monitor.py 
-qt.qpa.theme.dbus: Session DBus not running.
-qt.qpa.theme.dbus: Application will not react to setting changes.
- Check your DBus installation.
-qt.qpa.theme.gnome: dbus connection failed. Last error:  QDBusError("org.freedesktop.DBus.Error.AccessDenied", "Failed to connect to socket /run/user/1438/bus: Permission denied")
-
-(python:2489969): dbind-WARNING **: 12:26:39.581: Couldn't register with accessibility bus: Did not receive a reply. Possible causes include: the remote application did not send a reply, the message bus security policy blocked the reply, the reply timeout expired, or the network connection was broken.
-
-(python:2489969): Gtk-WARNING **: 12:26:39.601: GTK+ module /usr/lib64/gtk-2.0/modules/libcanberra-gtk-module.so cannot be loaded.
-GTK+ 2.x symbols detected. Using GTK+ 2.x and GTK+ 3 in the same process is not supported.
-Gtk-Message: 12:26:39.601: Failed to load module "canberra-gtk-module"
-
-(python:2489969): Gtk-WARNING **: 12:26:39.602: GTK+ module /usr/lib64/gtk-2.0/modules/libcanberra-gtk-module.so cannot be loaded.
-GTK+ 2.x symbols detected. Using GTK+ 2.x and GTK+ 3 in the same process is not supported.
-Gtk-Message: 12:26:39.602: Failed to load module "canberra-gtk-module"
-qt.qpa.theme.dbus: Session DBus not running.
-qt.qpa.theme.dbus: Application will not react to setting changes.
- Check your DBus installation.
-qt.qpa.theme.gnome: dbus connection failed. Last error:  QDBusError("org.freedesktop.DBus.Error.AccessDenied", "Failed to connect to socket /run/user/1438/bus: Permission denied")
-/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py:529: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
-  self._live_fig.tight_layout()
-2026-07-07 12:26:41,379 INFO monitoring 46 PVs; outputs in scan_monitor_output
-2026-07-07 12:26:41,379 INFO scan monitor running; Ctrl+C to stop
-^C2026-07-07 12:27:06,030 INFO stopped by user
+Exception ignored in: <function Image.__del__ at 0x7f00c11087c0>
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miniconda3/envs/py312/lib/python3.12/tkinter/__init__.py", line 4119, in __del__
+    self.tk.call('image', 'delete', self.name)
+RuntimeError: main thread is not in main loop
+/home/beams0/MARINF/dev/miniconda3/envs/py312/lib/python3.12/site-packages/epics/ca.py:1627: UserWarning: ca.get('8bmbXP3:HDF1:FileName') timed out after 5.00 seconds.
+  warnings.warn(msg % (name(chid), timeout))
+Exception ignored in: <function Variable.__del__ at 0x7f00c10660c0>
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miniconda3/envs/py312/lib/python3.12/tkinter/__init__.py", line 414, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x7f00c10660c0>
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miniconda3/envs/py312/lib/python3.12/tkinter/__init__.py", line 414, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x7f00c10660c0>
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miniconda3/envs/py312/lib/python3.12/tkinter/__init__.py", line 414, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: main thread is not in main loop
+Exception ignored in: <function Variable.__del__ at 0x7f00c10660c0>
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miniconda3/envs/py312/lib/python3.12/tkinter/__init__.py", line 414, in __del__
+    if self._tk.getboolean(self._tk.call("info", "exists", self._name)):
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: main thread is not in main loop
+/home/beams0/MARINF/dev/miniconda3/envs/py312/lib/python3.12/site-packages/epics/ca.py:1627: UserWarning: ca.get('8bmbXP3:HDF1:FullFileName_RBV') timed out after 5.00 seconds.
+  warnings.warn(msg % (name(chid), timeout))
+2026-07-07 12:38:55,398 WARNING flag event: struck_miss_trigger scan_number=32 values={'scan_execute': 1, 'acquiring': 1, 'elapsed_real': 33.049999998, 'nuse_all': 1175, 'current_channel': 1056, 'number_of_images': 1174, 'array_counter': 1055, 'detector_state': 1, 'trigger_mode': 3, 'capture': 1, 'full_file_name': '/mnt/micdata1/8bm/2026-2/Jakes/flyXRF/8bmb_0031_156.hdf5', 'file_path_exists': 1, 'array_rate': 33.0, 'requested_position': 66.05, 'actual_position': 63.6175, 'velocity': 0.6666666666666667, 'vmax': 5.0403225806452, 'beam_current': 200.01504157855368, 'actual_mode': 4}
+Tcl_AsyncDelete: async handler deleted by the wrong thread
+Aborted (core dumped)
 (py312) bash-5.1$ 
