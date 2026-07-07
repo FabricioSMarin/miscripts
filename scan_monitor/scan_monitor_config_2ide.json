@@ -107,8 +107,8 @@
         "comment": "XMAP missed triggers: acq_counter lags acq_target while struck is done.",
         "inputs": [
           {"label": "scan_busy", "pv": "2xfm:Fscan1.BUSY"},
-          {"label": "acq_target", "pv": "dxpXMAP2xfm3:dxp1:PixelsPerRun"},
-          {"label": "acq_counter", "pv": "dxpXMAP2xfm3:dxp1:CurrentPixel"},
+          {"label": "acq_target", "pv": "dxpXMAP2xfm3:PixelsPerRun"},
+          {"label": "acq_counter", "pv": "dxpXMAP2xfm3:CurrentPixel"},
           {"label": "struck_current", "pv": "2xfm:mcs:CurrentChannel"},
           {"label": "struck_all", "pv": "2xfm:mcs:NuseAll"},
           {"label": "struck_acquiring", "pv": "2xfm:mcs:Acquiring"}
@@ -166,8 +166,8 @@
       {"label": "elapsed_real", "pv": "2xfm:mcs:ElapsedReal"},
       {"label": "nuse_all", "pv": "2xfm:mcs:NuseAll"},
       {"label": "current_channel", "pv": "2xfm:mcs:CurrentChannel"},
-      {"label": "acq_target", "pv": "dxpXMAP2xfm3:dxp1:PixelsPerRun"},
-      {"label": "acq_counter", "pv": "dxpXMAP2xfm3:dxp1:CurrentPixel"},
+      {"label": "acq_target", "pv": "dxpXMAP2xfm3:PixelsPerRun"},
+      {"label": "acq_counter", "pv": "dxpXMAP2xfm3:"},
       {"label": "is_acquiring", "pv": "dxpXMAP2xfm3:Acquiring"},
       {"label": "collect_mode", "pv": "dxpXMAP2xfm3:CollectMode"},
       {"label": "capture", "pv": "dxpXMAP2xfm3:netCDF1:Capture_RBV"},
