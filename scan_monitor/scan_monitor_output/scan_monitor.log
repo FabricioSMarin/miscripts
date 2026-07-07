@@ -1,0 +1,359 @@
+2026-07-07 11:28:55,397 INFO monitoring 50 PVs; outputs in scan_monitor_output
+2026-07-07 11:28:55,398 INFO scan monitor running; Ctrl+C to stop
+2026-07-07 11:29:00,398 WARNING could not read inputs for beam_dump: failed to read PV 'SS:DesiredMode'
+2026-07-07 11:29:05,398 WARNING could not read inputs for struck_stuck_acquiring: failed to read PV '8bmbsft:3820.Acquiring'
+2026-07-07 11:29:10,398 WARNING could not read inputs for struck_miss_trigger: failed to read PV '8bmbsft:3820.Acquiring'
+2026-07-07 11:29:10,400 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 253, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:29:16,403 WARNING could not read inputs for beam_dump: failed to read PV 'SS:DesiredMode'
+2026-07-07 11:29:21,403 WARNING could not read inputs for struck_stuck_acquiring: failed to read PV '8bmbsft:3820.Acquiring'
+2026-07-07 11:29:26,404 WARNING could not read inputs for struck_miss_trigger: failed to read PV '8bmbsft:3820.Acquiring'
+2026-07-07 11:29:26,405 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 253, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:29:32,406 WARNING could not read inputs for beam_dump: failed to read PV 'SS:DesiredMode'
+2026-07-07 11:29:37,406 WARNING could not read inputs for struck_stuck_acquiring: failed to read PV '8bmbsft:3820.Acquiring'
+2026-07-07 11:29:42,407 WARNING could not read inputs for struck_miss_trigger: failed to read PV '8bmbsft:3820.Acquiring'
+2026-07-07 11:29:42,408 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 253, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:29:48,409 WARNING could not read inputs for beam_dump: failed to read PV 'SS:DesiredMode'
+2026-07-07 11:29:53,409 WARNING could not read inputs for struck_stuck_acquiring: failed to read PV '8bmbsft:3820.Acquiring'
+2026-07-07 11:29:58,410 WARNING could not read inputs for struck_miss_trigger: failed to read PV '8bmbsft:3820.Acquiring'
+2026-07-07 11:29:58,411 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 253, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:30:04,414 WARNING could not read inputs for beam_dump: failed to read PV 'SS:DesiredMode'
+2026-07-07 11:30:09,414 WARNING could not read inputs for struck_stuck_acquiring: failed to read PV '8bmbsft:3820.Acquiring'
+2026-07-07 11:30:14,414 WARNING could not read inputs for struck_miss_trigger: failed to read PV '8bmbsft:3820.Acquiring'
+2026-07-07 11:30:14,415 ERROR flag check failed for xspress3_miss_trigger: 'types.SimpleNamespace' object has no attribute 'num_frames'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 253, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 87, in xspress3_miss_trigger
+    and int(ctx.array_counter) != int(ctx.num_frames)
+                                      ^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'num_frames'
+2026-07-07 11:30:20,418 WARNING could not read inputs for beam_dump: failed to read PV 'SS:DesiredMode'
+2026-07-07 11:30:21,163 INFO stopped by user
+2026-07-07 11:30:50,204 INFO monitoring 50 PVs; outputs in scan_monitor_output
+2026-07-07 11:30:50,205 INFO scan monitor running; Ctrl+C to stop
+2026-07-07 11:30:55,205 WARNING could not read inputs for beam_dump: failed to read PV 'SS:DesiredMode'
+2026-07-07 11:31:00,205 WARNING could not read inputs for struck_stuck_acquiring: failed to read PV '8bmb:3820.Acquiring'
+2026-07-07 11:31:01,203 INFO stopped by user
+2026-07-07 11:43:23,483 INFO monitoring 46 PVs; outputs in scan_monitor_output
+2026-07-07 11:43:23,483 INFO scan monitor running; Ctrl+C to stop
+2026-07-07 11:43:28,484 WARNING could not read inputs for beam_dump: failed to read PV 'SS:DesiredMode'
+2026-07-07 11:43:28,486 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:43:34,489 WARNING could not read inputs for beam_dump: failed to read PV 'SS:DesiredMode'
+2026-07-07 11:43:34,492 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:43:40,493 WARNING could not read inputs for beam_dump: failed to read PV 'SS:DesiredMode'
+2026-07-07 11:44:32,141 INFO monitoring 46 PVs; outputs in scan_monitor_output
+2026-07-07 11:44:32,141 INFO scan monitor running; Ctrl+C to stop
+2026-07-07 11:44:32,143 ERROR flag check failed for xspress3_miss_trigger: 'types.SimpleNamespace' object has no attribute 'num_frames'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 87, in xspress3_miss_trigger
+    and int(ctx.array_counter) != int(ctx.num_frames)
+                                      ^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'num_frames'
+2026-07-07 11:44:33,148 ERROR flag check failed for xspress3_miss_trigger: 'types.SimpleNamespace' object has no attribute 'num_frames'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 87, in xspress3_miss_trigger
+    and int(ctx.array_counter) != int(ctx.num_frames)
+                                      ^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'num_frames'
+2026-07-07 11:44:34,152 ERROR flag check failed for xspress3_miss_trigger: 'types.SimpleNamespace' object has no attribute 'num_frames'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 87, in xspress3_miss_trigger
+    and int(ctx.array_counter) != int(ctx.num_frames)
+                                      ^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'num_frames'
+2026-07-07 11:44:34,154 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:35,156 ERROR flag check failed for xspress3_miss_trigger: 'types.SimpleNamespace' object has no attribute 'num_frames'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 87, in xspress3_miss_trigger
+    and int(ctx.array_counter) != int(ctx.num_frames)
+                                      ^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'num_frames'
+2026-07-07 11:44:35,158 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:36,162 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:37,165 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:38,169 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:39,173 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:40,176 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:41,180 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:42,183 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:43,187 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:44,190 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:45,194 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:46,197 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:46,336 INFO stopped by user
+2026-07-07 11:44:58,237 INFO monitoring 46 PVs; outputs in scan_monitor_output
+2026-07-07 11:44:58,237 INFO scan monitor running; Ctrl+C to stop
+2026-07-07 11:44:58,240 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:59,245 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:45:00,248 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:45:00,609 INFO stopped by user

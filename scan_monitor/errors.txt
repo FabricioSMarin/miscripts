@@ -1,0 +1,40 @@
+(py312) bash-5.1$ python scan_monitor.py 
+2026-07-07 11:44:58,237 INFO monitoring 46 PVs; outputs in scan_monitor_output
+2026-07-07 11:44:58,237 INFO scan monitor running; Ctrl+C to stop
+2026-07-07 11:44:58,240 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:44:59,245 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+2026-07-07 11:45:00,248 ERROR flag check failed for filename_not_insync: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+Traceback (most recent call last):
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor.py", line 269, in evaluate_flags
+    fired = check(context)
+            ^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 54, in wrapper
+    return fn(SimpleNamespace(**context))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/beams0/MARINF/dev/miscripts/scan_monitor/scan_monitor_flags.py", line 110, in filename_not_insync
+    and int(str(ctx.xp3_file_name).rsplit("_", 1)[-1]) != int(ctx.mda_scan_number) - 1
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '[ 56  98 109  98  95  48  48  51  49   0   0   0   0   0   0   0   0   0\n   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0\n   0   0   0   0]'
+^C2026-07-07 11:45:00,609 INFO stopped by user
