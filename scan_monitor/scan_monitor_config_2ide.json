@@ -78,9 +78,9 @@
       "struck_stuck_acquiring": {
         "comment": "MCS 3820 remains acquiring even after receiving all triggers (current_channel reached nuse_all but Acquiring stays 1 and scan is no longer busy).",
         "inputs": [
-          {"label": "acquiring", "pv": "2xfm:3820:Acquiring"},
-          {"label": "nuse_all", "pv": "2xfm:3820:NuseAll"},
-          {"label": "current_channel", "pv": "2xfm:3820:CurrentChannel"},
+          {"label": "acquiring", "pv": "2xfm:mcs:Acquiring"},
+          {"label": "nuse_all", "pv": "2xfm:mcs:NuseAll"},
+          {"label": "current_channel", "pv": "2xfm:mcs:CurrentChannel"},
           {"label": "scan_busy", "pv": "2xfm:Fscan1.BUSY"},
           {"label": "is_paused", "pv": "2xfm:FscanPause.VAL"},
           {"label": "is_wait_inner", "pv": "2xfm:FscanH.WCNT"},
@@ -93,11 +93,11 @@
         "comment": "MCS 3820 still acquiring and missing triggers (current_channel < nuse_all) but the stage already completed its motion (requested ~ actual position).",
         "inputs": [
           {"label": "scan_busy", "pv": "2xfm:Fscan1.BUSY"},
-          {"label": "acquiring", "pv": "2xfm:3820:Acquiring"},
-          {"label": "nuse_all", "pv": "2xfm:3820:NuseAll"},
+          {"label": "acquiring", "pv": "2xfm:mcs:Acquiring"},
+          {"label": "nuse_all", "pv": "2xfm:mcs:NuseAll"},
           {"label": "dwell_time", "pv": "2xfm:Flyscans:Setup:DwellTime.VAL"},
-          {"label": "elapsed_time", "pv": "2xfm:3820:ElapsedReal"},
-          {"label": "current_channel", "pv": "2xfm:3820:CurrentChannel"},
+          {"label": "elapsed_time", "pv": "2xfm:mcs:ElapsedReal"},
+          {"label": "current_channel", "pv": "2xfm:mcs:CurrentChannel"},
           {"label": "requested_position", "pv": "2xfm:m57.VAL"},
           {"label": "actual_position", "pv": "2xfm:m57.RBV"}
         ]
@@ -109,9 +109,9 @@
           {"label": "scan_busy", "pv": "2xfm:Fscan1.BUSY"},
           {"label": "acq_target", "pv": "dxpXMAP2xfm3:dxp1:PixelsPerRun"},
           {"label": "acq_counter", "pv": "dxpXMAP2xfm3:dxp1:CurrentPixel"},
-          {"label": "struck_current", "pv": "2xfm:3820:CurrentChannel"},
-          {"label": "struck_all", "pv": "2xfm:3820:NuseAll"},
-          {"label": "struck_acquiring", "pv": "2xfm:3820:Acquiring"}
+          {"label": "struck_current", "pv": "2xfm:mcs:CurrentChannel"},
+          {"label": "struck_all", "pv": "2xfm:mcs:NuseAll"},
+          {"label": "struck_acquiring", "pv": "2xfm:mcs:Acquiring"}
         ]
       },
   
@@ -121,9 +121,9 @@
           {"label": "scan_busy", "pv": "2xfm:Fscan1.BUSY"},
           {"label": "num_frames", "pv": "dxpXMAP2xfm3:netCDF1:NumCapture_RBV"},
           {"label": "saved_frames", "pv": "dxpXMAP2xfm3:netCDF1:NumCaptured_RBV"},
-          {"label": "struck_current", "pv": "2xfm:3820:CurrentChannel"},
-          {"label": "struck_all", "pv": "2xfm:3820:NuseAll"},
-          {"label": "struck_acquiring", "pv": "2xfm:3820:Acquiring"}
+          {"label": "struck_current", "pv": "2xfm:mcs:CurrentChannel"},
+          {"label": "struck_all", "pv": "2xfm:mcs:NuseAll"},
+          {"label": "struck_acquiring", "pv": "2xfm:mcs:Acquiring"}
         ]
       },
   
@@ -150,22 +150,22 @@
       "stage_stuck": {
         "comment": "Sample stage does not advance to its next scan position: requested != actual position persists while the scan is busy and velocity is ~0.",
         "inputs": [
-          {"label": "struck_acquiring", "pv": "2xfm:3820:Acquiring"},
+          {"label": "struck_acquiring", "pv": "2xfm:mcs:Acquiring"},
           {"label": "inner_busy", "pv": "2xfm:FscanH.BUSY"},
           {"label": "is_moving", "pv": "2xfm:m57.DMOV"},
-          {"label": "struck_current", "pv": "2xfm:3820:CurrentChannel"},
-          {"label": "elapsed_time", "pv": "2xfm:3820:ElapsedReal"}
+          {"label": "struck_current", "pv": "2xfm:mcs:CurrentChannel"},
+          {"label": "elapsed_time", "pv": "2xfm:mcs:ElapsedReal"}
         ]
       }
     },
   
     "flag_events": [
       {"label": "scan_execute", "pv": "2xfm:Fscan1.EXSC"},
-      {"label": "acquiring", "pv": "2xfm:3820:Acquiring"},
+      {"label": "acquiring", "pv": "2xfm:mcs:Acquiring"},
       {"label": "dwell_time", "pv": "2xfm:Flyscans:Setup:DwellTime.VAL"},
-      {"label": "elapsed_real", "pv": "2xfm:3820:ElapsedReal"},
-      {"label": "nuse_all", "pv": "2xfm:3820:NuseAll"},
-      {"label": "current_channel", "pv": "2xfm:3820:CurrentChannel"},
+      {"label": "elapsed_real", "pv": "2xfm:mcs:ElapsedReal"},
+      {"label": "nuse_all", "pv": "2xfm:mcs:NuseAll"},
+      {"label": "current_channel", "pv": "2xfm:mcs:CurrentChannel"},
       {"label": "acq_target", "pv": "dxpXMAP2xfm3:dxp1:PixelsPerRun"},
       {"label": "acq_counter", "pv": "dxpXMAP2xfm3:dxp1:CurrentPixel"},
       {"label": "is_acquiring", "pv": "dxpXMAP2xfm3:Acquiring"},
