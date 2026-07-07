@@ -20,7 +20,7 @@
     ],
   
     "scan_parameters": [
-      {"label": "saveData_message", "pv": "2xfm:saveData_message"},
+      {"label": "saveData_message", "pv": "2xfm:saveData_message", "as": "string"},
       {"label": "next_scan_number", "pv": "2xfm:saveData_scanNumber"},
       {"label": "dwell_time", "pv": "2xfm:Flyscans:Setup:DwellTime.VAL"},
       {"label": "Xnpts", "pv": "2xfm:FscanH.NPTS"},

@@ -30,6 +30,7 @@ import csv
 import json
 import logging
 import os
+import re
 import sys
 import threading
 import time
@@ -126,6 +127,34 @@ def coerce_pv_string(value: Any) -> str:
     except (TypeError, ValueError):
         pass
     return str(value).rstrip("\x00")
+
+
+def scan_number_from_save_data_message(message: Any) -> str | None:
+    """Extract scan index from saveData_message (e.g. ``Wrote data to 2xfm_0025.mda``)."""
+    text = coerce_pv_string(message).strip()
+    if not text:
+        return None
+    match = re.search(r"[_/](\d+)(?:\.[A-Za-z0-9]+)?\s*$", text)
+    if match:
+        return str(int(match.group(1)))
+    matches = re.findall(r"\d+", text)
+    if matches:
+        return str(int(matches[-1]))
+    return None
+
+
+def resolve_scan_number(parameters: dict[str, Any]) -> str:
+    """Resolve scan_number for scans.csv and flag events."""
+    from_message = scan_number_from_save_data_message(parameters.get("saveData_message"))
+    if from_message is not None:
+        return from_message
+    nxt = parameters.get("next_scan_number")
+    if nxt is not None:
+        try:
+            return str(int(nxt) - 1)
+        except (TypeError, ValueError):
+            pass
+    return "?"
 
 
 def pv_value(pv_name: str, *, as_string: bool = False) -> Any:
@@ -476,10 +505,20 @@ class ScanMonitor:
 
     def _read_scan_number(self) -> str:
         try:
-            value = pv_value(self.scan_number_pv)
+            parameters = read_labeled_pvs(self.config["scan_parameters"])
         except RuntimeError:
-            value = "?"
-        return str(value)
+            try:
+                value = pv_value(self.scan_number_pv)
+            except RuntimeError:
+                return "?"
+            parameters = {"next_scan_number": value}
+        return resolve_scan_number(parameters)
+
+    def _current_scan_number(self) -> str:
+        with self._lock:
+            if self.scans:
+                return self.scans[-1].scan_number
+        return self._read_scan_number()
 
     def _scan_active_now(self) -> bool:
         """True when scan_started PVs indicate a scan is already in progress."""
@@ -518,7 +557,7 @@ class ScanMonitor:
         self._maybe_switch_output_dir_on_scan_start()
         ts, iso_time = utc_now()
         parameters = read_labeled_pvs(self.config["scan_parameters"])
-        scan_number = str(parameters.get("next_scan_number", self._read_scan_number()))
+        scan_number = resolve_scan_number(parameters)
 
         record = ScanRecord(
             timestamp=ts,
@@ -544,7 +583,7 @@ class ScanMonitor:
 
     def on_flag_event(self, flag_name: str, flag_values: dict[str, Any]) -> None:
         ts, iso_time = utc_now()
-        scan_number = self._read_scan_number()
+        scan_number = self._current_scan_number()
         color = marker_color(flag_name)
 
         event = TimelineEvent(
@@ -885,25 +924,26 @@ def run_demo(output_dir: Path) -> None:
         ts = base + i * 30
         iso = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat(timespec="milliseconds")
         center = round(-0.5 + 0.5 * (i - 1), 3)
+        parameters = {
+            "next_scan_number": scan_num + 1,
+            "Xnpts": 101,
+            "Ynpts": 51,
+            "Xstart": round(center - 0.5, 3),
+            "Xend": round(center + 0.5, 3),
+            "Xstep": 0.01,
+            "Xcenter": center,
+            "Ystart": round(center - 0.25, 3),
+            "Yend": round(center + 0.25, 3),
+            "Ystep": 0.01,
+            "Ycenter": center,
+            "saveData_message": f"Wrote data to 8bmb_{scan_num:04d}.mda",
+        }
         monitor.scans.append(
             ScanRecord(
                 timestamp=ts,
                 iso_time=iso,
                 scan_number=str(scan_num),
-                parameters={
-                    "next_scan_number": scan_num,
-                    "Xnpts": 101,
-                    "Ynpts": 51,
-                    "Xstart": round(center - 0.5, 3),
-                    "Xend": round(center + 0.5, 3),
-                    "Xstep": 0.01,
-                    "Xcenter": center,
-                    "Ystart": round(center - 0.25, 3),
-                    "Yend": round(center + 0.25, 3),
-                    "Ystep": 0.01,
-                    "Ycenter": center,
-                    "saveData_message": "scan complete",
-                },
+                parameters=parameters,
             )
         )
         monitor.timeline.append(

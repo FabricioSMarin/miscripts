@@ -20,7 +20,7 @@
   ],
 
   "scan_parameters": [
-    {"label": "saveData_message", "pv": "8bmbsft:saveData_message"},
+    {"label": "saveData_message", "pv": "8bmbsft:saveData_message", "as": "string"},
     {"label": "next_scan_number", "pv": "8bmbsft:saveData_scanNumber"},
     {"label": "dwell_time", "pv": "8bmb:Flyscans:Setup:DwellTime.VAL"},
     {"label": "Xnpts", "pv": "8bmbsft:FscanH.NPTS"},
