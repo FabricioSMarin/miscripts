@@ -4,9 +4,8 @@ Flag-event detectors for the EPICS scan monitor.
 
 Each function evaluates a combination of PV values and returns True when the
 corresponding fault condition is detected. Beamline-specific PVs are listed in
-the JSON config under each flag's ``inputs``; shared logic uses common label
-names (``acq_counter``, ``detector_file_name``, etc.) so one function works
-across detectors (Xspress3, XMAP, ...).
+the JSON config under each flag's ``inputs``. Detector-specific flags keep their
+own logic (Xspress3 vs XMAP) rather than sharing one acquisition helper.
 """
 
 from __future__ import annotations
@@ -17,10 +16,21 @@ from types import SimpleNamespace
 from typing import Any, Callable, Optional
 
 # Flags that fire immediately on first positive check (no flag_confirm_s wait).
-FLAGS_NO_CONFIRM = frozenset({"scan_aborted", "scan_paused", "scan_unpaused"})
+FLAGS_NO_CONFIRM = frozenset(
+    {
+        "scan_aborted",
+        "scan_paused",
+        "scan_unpaused",
+        "beam_dump",
+        "memory_high",
+        "memory_critical",
+    }
+)
 
-# Orange markers: aborted, paused, or beam dump on the event-time plot.
-ORANGE_FLAGS = frozenset({"scan_aborted", "beam_dump", "scan_paused", "scan_unpaused"})
+# Orange markers: aborted, paused, beam dump, or elevated system memory.
+ORANGE_FLAGS = frozenset(
+    {"scan_aborted", "beam_dump", "scan_paused", "scan_unpaused", "memory_high"}
+)
 
 # Red markers: all other flag events.
 RED_FLAGS = frozenset(
@@ -35,8 +45,14 @@ RED_FLAGS = frozenset(
         "ioc_is_down",
         "stage_stuck",
         "write_error",
+        "memory_critical",
     }
 )
+
+# System memory thresholds (% used).
+MEMORY_HIGH_PCT = 60.0
+MEMORY_CRITICAL_PCT = 90.0
+MEMORY_RESET_PCT = 50.0
 
 ContextDict = dict[str, Any]
 FlagLogic = Callable[[SimpleNamespace], bool]
@@ -61,23 +77,6 @@ def flag_check(fn: FlagLogic) -> FlagFunction:
 
 def _struck_done(ctx: SimpleNamespace) -> bool:
     return int(ctx.struck_acquiring) == 0 and int(ctx.struck_current) == int(ctx.struck_all)
-
-
-def _acq_miss_trigger(
-    ctx: SimpleNamespace,
-    *,
-    counter: str = "acq_counter",
-    target: str = "acq_target",
-    rate: str | None = "acq_rate",
-) -> bool:
-    if int(ctx.scan_busy) != 1:
-        return False
-    if rate is not None and int(getattr(ctx, rate)) != 0:
-        return False
-    return (
-        int(getattr(ctx, counter)) != int(getattr(ctx, target))
-        and _struck_done(ctx)
-    )
 
 
 def _lost_frames_trigger(
@@ -117,19 +116,34 @@ def struck_stuck_acquiring(ctx: SimpleNamespace) -> bool:
 @flag_check
 def xspress3_miss_trigger(ctx: SimpleNamespace) -> bool:
     """Xspress3 missed an expected acquisition trigger."""
-    return _acq_miss_trigger(ctx)
+    return (
+        int(ctx.scan_busy) == 1
+        and int(ctx.acquiring) == 1
+        and int(ctx.acq_rate) == 0
+        and int(ctx.acq_counter) != int(ctx.acq_target)
+        and _struck_done(ctx)
+    )
 
 
 @flag_check
 def xspress3_lost_frame(ctx: SimpleNamespace) -> bool:
     """Xspress3 saved-frame count differs from received triggers while capturing."""
-    return _lost_frames_trigger(ctx)
-
+    return (
+        int(ctx.scan_busy) == 1
+        and int(ctx.capturing) == 1
+        and int(ctx.acq_rate) == 0
+        and int(ctx.num_frames) != int(ctx.saved_frames)
+        and _struck_done(ctx)
+    )
 
 @flag_check
 def xmap_miss_trigger(ctx: SimpleNamespace) -> bool:
     """XMAP missed triggers: pixel counter lags pixels-per-run."""
-    return _acq_miss_trigger(ctx, rate=None)
+    return (
+        int(ctx.scan_busy) == 1
+        and int(ctx.acq_counter) != int(ctx.acq_target)
+        and _struck_done(ctx)
+    )
 
 
 @flag_check
@@ -186,10 +200,30 @@ def filename_not_insync(ctx: SimpleNamespace) -> bool:
     return name_mismatch and line_mismatch
 
 
+_beam_dump_initialized = False
+_beam_dump_active = False
+
+
+def _beam_is_down(ctx: SimpleNamespace) -> bool:
+    return int(ctx.actual_mode) != 4 and int(ctx.desired_mode) == 1
+
+
 @flag_check
 def beam_dump(ctx: SimpleNamespace) -> bool:
-    """Beam dump or beam-off: ring left operations mode during user operations."""
-    return int(ctx.actual_mode) != 4 and int(ctx.desired_mode) == 1
+    """Beam dump or beam-off: fire once when ring leaves ops; reset when back up."""
+    global _beam_dump_initialized, _beam_dump_active
+    is_down = _beam_is_down(ctx)
+    if not _beam_dump_initialized:
+        _beam_dump_initialized = True
+        _beam_dump_active = is_down
+        return False
+    if not is_down:
+        _beam_dump_active = False
+        return False
+    if _beam_dump_active:
+        return False
+    _beam_dump_active = True
+    return True
 
 
 def ioc_is_down(context: Optional[ContextDict] = None) -> bool:
@@ -266,6 +300,92 @@ def stage_stuck(ctx: SimpleNamespace) -> bool:
     return False
 
 
+_last_memory_percent: float | None = None
+_memory_high_active = False
+_memory_critical_active = False
+
+
+def system_memory_percent() -> float | None:
+    """Return OS memory used percent, or None if unavailable."""
+    try:
+        import psutil  # type: ignore
+
+        return float(psutil.virtual_memory().percent)
+    except Exception:
+        pass
+
+    try:
+        meminfo: dict[str, int] = {}
+        with open("/proc/meminfo", encoding="utf-8") as f:
+            for line in f:
+                parts = line.split()
+                if len(parts) >= 2:
+                    meminfo[parts[0].rstrip(":")] = int(parts[1])
+        total = meminfo["MemTotal"]
+        available = meminfo.get("MemAvailable", meminfo["MemFree"])
+        if total <= 0:
+            return None
+        return 100.0 * (1.0 - available / total)
+    except (OSError, KeyError, ValueError):
+        pass
+
+    try:
+        import ctypes
+
+        class MEMORYSTATUSEX(ctypes.Structure):
+            _fields_ = [
+                ("dwLength", ctypes.c_ulong),
+                ("dwMemoryLoad", ctypes.c_ulong),
+                ("ullTotalPhys", ctypes.c_ulonglong),
+                ("ullAvailPhys", ctypes.c_ulonglong),
+                ("ullTotalPageFile", ctypes.c_ulonglong),
+                ("ullAvailPageFile", ctypes.c_ulonglong),
+                ("ullTotalVirtual", ctypes.c_ulonglong),
+                ("ullAvailVirtual", ctypes.c_ulonglong),
+                ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+            ]
+
+        status = MEMORYSTATUSEX()
+        status.dwLength = ctypes.sizeof(MEMORYSTATUSEX)
+        if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)):
+            return float(status.dwMemoryLoad)
+    except Exception:
+        pass
+    return None
+
+
+def memory_high(context: Optional[ContextDict] = None) -> bool:
+    """System memory above 60% (orange); resets when usage drops to 50%."""
+    global _last_memory_percent, _memory_high_active
+    usage = system_memory_percent()
+    _last_memory_percent = usage
+    if usage is None:
+        return False
+    if usage <= MEMORY_RESET_PCT:
+        _memory_high_active = False
+        return False
+    if usage > MEMORY_HIGH_PCT and not _memory_high_active:
+        _memory_high_active = True
+        return True
+    return False
+
+
+def memory_critical(context: Optional[ContextDict] = None) -> bool:
+    """System memory above 90% (red); resets when usage drops to 50%."""
+    global _last_memory_percent, _memory_critical_active
+    usage = system_memory_percent()
+    _last_memory_percent = usage
+    if usage is None:
+        return False
+    if usage <= MEMORY_RESET_PCT:
+        _memory_critical_active = False
+        return False
+    if usage > MEMORY_CRITICAL_PCT and not _memory_critical_active:
+        _memory_critical_active = True
+        return True
+    return False
+
+
 FLAG_FUNCTIONS: dict[str, FlagFunction] = {
     "struck_miss_trigger": struck_miss_trigger,
     "struck_stuck_acquiring": struck_stuck_acquiring,
@@ -281,6 +401,8 @@ FLAG_FUNCTIONS: dict[str, FlagFunction] = {
     "scan_paused": scan_paused,
     "scan_unpaused": scan_unpaused,
     "stage_stuck": stage_stuck,
+    "memory_high": memory_high,
+    "memory_critical": memory_critical,
 }
 
 

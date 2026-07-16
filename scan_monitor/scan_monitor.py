@@ -55,7 +55,13 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 from matplotlib.widgets import CheckButtons
 
-from scan_monitor_flags import FLAG_FUNCTIONS, FLAGS_NO_CONFIRM, begin_flag_poll, marker_color
+from scan_monitor_flags import (
+    FLAG_FUNCTIONS,
+    FLAGS_NO_CONFIRM,
+    begin_flag_poll,
+    marker_color,
+    system_memory_percent,
+)
 
 epics: Any = None
 
@@ -634,18 +640,17 @@ class ScanMonitor:
                 continue
 
             inputs = spec.get("inputs", [])
-            if not inputs:
-                continue
-
             last = self._last_flag_fire.get(flag_name, 0.0)
             if now - last < self.flag_cooldown_s:
                 continue
 
-            try:
-                context = read_labeled_pvs(inputs)
-            except RuntimeError as exc:
-                self.logger.warning("could not read inputs for %s: %s", flag_name, exc)
-                continue
+            context: dict[str, Any] = {}
+            if inputs:
+                try:
+                    context = read_labeled_pvs(inputs)
+                except RuntimeError as exc:
+                    self.logger.warning("could not read inputs for %s: %s", flag_name, exc)
+                    continue
 
             try:
                 fired = check(context)
@@ -664,7 +669,7 @@ class ScanMonitor:
 
             if flag_name in FLAGS_NO_CONFIRM:
                 self._last_flag_fire[flag_name] = now
-                flag_values = read_labeled_pvs(self.config["flag_events"])
+                flag_values = self._flag_event_values(flag_name)
                 self.on_flag_event(flag_name, flag_values)
                 continue
 
@@ -682,8 +687,21 @@ class ScanMonitor:
 
             del self._flag_confirm_pending[flag_name]
             self._last_flag_fire[flag_name] = now
-            flag_values = read_labeled_pvs(self.config["flag_events"])
+            flag_values = self._flag_event_values(flag_name)
             self.on_flag_event(flag_name, flag_values)
+
+    def _flag_event_values(self, flag_name: str) -> dict[str, Any]:
+        """Snapshot flag_events PVs; attach memory percent for system-memory flags."""
+        try:
+            values = read_labeled_pvs(self.config.get("flag_events", []))
+        except RuntimeError as exc:
+            self.logger.warning("could not read flag_events for %s: %s", flag_name, exc)
+            values = {}
+        if flag_name in ("memory_high", "memory_critical"):
+            mem = system_memory_percent()
+            if mem is not None:
+                values["memory_percent"] = round(mem, 2)
+        return values
 
     def write_scans_csv(self) -> None:
         with self._lock:

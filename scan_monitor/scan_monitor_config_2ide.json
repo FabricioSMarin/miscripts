@@ -156,6 +156,16 @@
           {"label": "struck_current", "pv": "2xfm:mcs:CurrentChannel"},
           {"label": "elapsed_time", "pv": "2xfm:mcs:ElapsedReal"}
         ]
+      },
+
+      "memory_high": {
+        "comment": "Host OS memory usage crossed above 60%. Fires once; resets when usage drops to 50%.",
+        "inputs": []
+      },
+
+      "memory_critical": {
+        "comment": "Host OS memory usage crossed above 90%. Fires once; resets when usage drops to 50%.",
+        "inputs": []
       }
     },
   

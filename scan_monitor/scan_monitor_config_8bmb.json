@@ -108,6 +108,7 @@
         "comment": "Xspress3 missed acquisition triggers: acq_counter lags acq_target while struck is done.",
         "inputs": [
           {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
+          {"label": "acquiring", "pv": "8bmbXP3:det1:Acquiring_RBV"},
           {"label": "acq_rate", "pv": "8bmbXP3:det1:ArrayRate_RBV"},
           {"label": "acq_target", "pv": "8bmbXP3:det1:NumImages_RBV"},
           {"label": "acq_counter", "pv": "8bmbXP3:det1:ArrayCounter_RBV"},
@@ -121,6 +122,7 @@
         "comment": "Xspress3 number of saved frames differs from received triggers and the HDF writer remains capturing.",
         "inputs": [
           {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
+          {"label": "capturing", "pv": "8bmbXP3:HDF1:Capturing_RBV"},
           {"label": "acq_rate", "pv": "8bmbXP3:det1:ArrayRate_RBV"},
           {"label": "num_frames", "pv": "8bmbXP3:HDF1:NumCapture_RBV"},
           {"label": "saved_frames", "pv": "8bmbXP3:HDF1:NumCaptured_RBV"},
@@ -159,6 +161,16 @@
           {"label": "struck_current", "pv": "8bmb:3820:CurrentChannel"},
           {"label": "elapsed_time", "pv": "8bmb:3820:ElapsedReal"}
         ]
+      },
+
+      "memory_high": {
+        "comment": "Host OS memory usage crossed above 60%. Fires once; resets when usage drops to 50%.",
+        "inputs": []
+      },
+
+      "memory_critical": {
+        "comment": "Host OS memory usage crossed above 90%. Fires once; resets when usage drops to 50%.",
+        "inputs": []
       }
     },
   

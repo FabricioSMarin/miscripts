@@ -1,0 +1,89 @@
+record(ao, "$(P)stepSizeX") {
+    field(DESC, "Step size in X")
+    field(DTYP, "Soft Channel")
+    field(VAL, "0.0")
+    field(PREC, "6")
+    field(EGU, "mm")
+}
+
+record(ao, "$(P)stepSizeY") {
+    field(DESC, "Step size in Y")
+    field(DTYP, "Soft Channel")
+    field(VAL, "0.0")
+    field(PREC, "6")
+    field(EGU, "mm")
+}
+
+record(ao, "$(P)dwellTimeFly") {
+    field(DESC, "Dwell time for fly scans")
+    field(DTYP, "Soft Channel")
+    field(VAL, "0.0")
+    field(PREC, "6")
+    field(EGU, "s")
+}
+
+record(ao, "$(P)dwellTimeStep") {
+    field(DESC, "Dwell time for step scans")
+    field(DTYP, "Soft Channel")
+    field(VAL, "0.0")
+    field(PREC, "6")
+    field(EGU, "s")
+}
+
+record(ao, "$(P)energy") {
+    field(DESC, "Scan energy")
+    field(DTYP, "Soft Channel")
+    field(VAL, "0.0")
+    field(PREC, "6")
+    field(EGU, "eV")
+}
+
+record(mbbo, "$(P)scanType") {
+    field(DESC, "Scan type")
+    field(DTYP, "Soft Channel")
+    field(ZRVL, "0")
+    field(ZRST, "fly")
+    field(ONVL, "1")
+    field(ONST, "step")
+    field(VAL,  "0")   # default: fly
+}
+
+record(mbbo, "$(P)trajectory") {
+    field(DESC, "Trajectory pattern")
+    field(DTYP, "Soft Channel")
+    field(ZRVL, "0")
+    field(ZRST, "snake")
+    field(ONVL, "1")
+    field(ONST, "raster")
+    field(TWVL, "2")
+    field(TWST, "spiral")
+    field(VAL,  "0")   # default: snake
+}
+
+record(longin, "$(P)CurrentRow") {
+    field(DESC, "current row of active scan")
+    field(DTYP, "Soft Channel")
+    field(INP,  "8bmbsft:Fscan1.CPT CP MS")
+    field(SCAN, "Passive")
+}
+
+record(longin, "$(P)CurrentColumn") {
+    field(DESC, "current column of active scan")
+    field(DTYP, "Soft Channel")
+    field(INP,  "8bmbXP3:det1:ArrayCounter_RBV CP MS")
+    field(SCAN, "Passive")
+}
+
+record(longin, "$(P)MaxRow") {
+    field(DESC, "Maximum num rows for current scan")
+    field(DTYP, "Soft Channel")
+    field(INP,  "8bmbsft:Fscan1.NPTS CP MS")
+    field(SCAN, "Passive")
+}
+
+record(longin, "$(P)MaxColumn") {
+    field(DESC, "maximum number of columns for current scan")
+    field(DTYP, "Soft Channel")
+    field(INP,  "8bmbXP3:det1:NumImages_RBV CP MS")
+    field(SCAN, "Passive")
+}
