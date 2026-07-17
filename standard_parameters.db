@@ -1,31 +1,38 @@
-record(ao, "$(P)stepSizeX") {
-    field(DESC, "Step size in X")
-    field(DTYP, "Soft Channel")
-    field(VAL, "0.0")
+record(calc, "$(P)stepSizeX") {
+    field(DESC, "Mirrors active scan's step size X")
+    field(SCAN, "Passive")
+    field(INPA, "8bmbsft:scan2.BUSY CP")   # step-scan outer active?
+    field(INPB, "8bmbsft:scan1.BUSY CP")    # step-scan inner active?
+    field(INPC, "8bmbsft:scan1.P1SI CP")    # step-scan source PV 
+    field(INPD, "8bmbsft:Fscan1.BUSY CP")  # fly-scan outer active?
+    field(INPE, "8bmbsft:FscanH.P1SI CP")    # fly-scan source PV
+    field(CALC, "(A|B)?C:(D?E:-1)")
     field(PREC, "6")
     field(EGU, "mm")
 }
 
-record(ao, "$(P)stepSizeY") {
-    field(DESC, "Step size in Y")
-    field(DTYP, "Soft Channel")
-    field(VAL, "0.0")
+record(calc, "$(P)stepSizeY") {
+    field(DESC, "Mirrors active scan's step size Y")
+    field(SCAN, "Passive")
+    field(INPA, "8bmbsft:scan2.BUSY CP")   # step-scan outer active?
+    field(INPB, "8bmbsft:scan1.BUSY CP")    # step-scan inner active?
+    field(INPC, "8bmbsft:scan2.P1SI CP")    # step-scan source PV 
+    field(INPD, "8bmbsft:Fscan1.BUSY CP")  # fly-scan outer active?
+    field(INPE, "8bmbsft:Fscan1.P1SI CP")    # fly-scan source PV
+    field(CALC, "(A|B)?C:(D?E:-1)")
     field(PREC, "6")
     field(EGU, "mm")
 }
 
-record(ao, "$(P)dwellTimeFly") {
-    field(DESC, "Dwell time for fly scans")
-    field(DTYP, "Soft Channel")
-    field(VAL, "0.0")
-    field(PREC, "6")
-    field(EGU, "s")
-}
-
-record(ao, "$(P)dwellTimeStep") {
-    field(DESC, "Dwell time for step scans")
-    field(DTYP, "Soft Channel")
-    field(VAL, "0.0")
+record(calc, "$(P)dwellTime") {
+    field(DESC, "Dwell time for scans")
+    field(SCAN, "Passive")
+    field(INPA, "8bmbsft:scan2.BUSY CP")   # step-scan outer active?
+    field(INPB, "8bmbsft:scan1.BUSY CP")    # step-scan inner active?
+    field(INPC, "8bmbsft:userTran6.A CP")    # step-scan dwell PV 
+    field(INPD, "8bmbsft:Fscan1.BUSY CP")  # fly-scan outer active?
+    field(INPE, "8bmb:Flyscans:Setup:DwellTime.VAL CP")    # fly-scan dwell PV
+    field(CALC, "(A|B)?C:(D?(E/1000):-1)")
     field(PREC, "6")
     field(EGU, "s")
 }
@@ -38,14 +45,13 @@ record(ao, "$(P)energy") {
     field(EGU, "eV")
 }
 
-record(mbbo, "$(P)scanType") {
+record(calc, "$(P)scanType") {
     field(DESC, "Scan type")
-    field(DTYP, "Soft Channel")
-    field(ZRVL, "0")
-    field(ZRST, "fly")
-    field(ONVL, "1")
-    field(ONST, "step")
-    field(VAL,  "0")   # default: fly
+    field(SCAN, "Passive")
+    field(INPA, "8bmbsft:scan2.BUSY CP")   # step-scan outer active?
+    field(INPB, "8bmbsft:scan1.BUSY CP")    # step-scan inner active?
+    field(INPC, "8bmbsft:Fscan1.BUSY CP")  # fly-scan outer active?
+    field(CALC, "(A|B)?0:(D?1:-1)") # step=0, fly=1, inactive=-1
 }
 
 record(mbbo, "$(P)trajectory") {
@@ -57,7 +63,7 @@ record(mbbo, "$(P)trajectory") {
     field(ONST, "raster")
     field(TWVL, "2")
     field(TWST, "spiral")
-    field(VAL,  "0")   # default: snake
+    field(VAL,  "1")   # default: raster
 }
 
 record(longin, "$(P)CurrentRow") {
@@ -75,14 +81,14 @@ record(longin, "$(P)CurrentColumn") {
 }
 
 record(longin, "$(P)MaxRow") {
-    field(DESC, "Maximum num rows for current scan")
+    field(DESC, "Max rows for current scan")
     field(DTYP, "Soft Channel")
     field(INP,  "8bmbsft:Fscan1.NPTS CP MS")
     field(SCAN, "Passive")
 }
 
 record(longin, "$(P)MaxColumn") {
-    field(DESC, "maximum number of columns for current scan")
+    field(DESC, "Max columns for current scan")
     field(DTYP, "Soft Channel")
     field(INP,  "8bmbXP3:det1:NumImages_RBV CP MS")
     field(SCAN, "Passive")
