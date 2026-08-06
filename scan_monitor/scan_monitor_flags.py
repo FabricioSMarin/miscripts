@@ -411,3 +411,4 @@ def marker_color(flag_name: str) -> str:
     if flag_name in ORANGE_FLAGS:
         return "orange"
     return "red"
+

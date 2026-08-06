@@ -21,6 +21,9 @@ Outputs (written under ``<output_dir_pv>/scan_monitor_output`` unless overridden
 
 At launch an interactive timeline window can show events in real time (optional).
 The saved PNG always includes all events, including those loaded from prior runs.
+
+``--plot-only`` runs the monitor purely as a live viewer: PVs are polled and flags
+evaluated as usual, but nothing is written to disk (no log file, CSV, JSONL, or PNGs).
 """
 
 from __future__ import annotations
@@ -191,11 +194,16 @@ def combine_linux_mount_path(linux_mount: str, remote_path: str) -> Path:
 
         /mnt/micdata1/2ide/  +  //micdata/data1/2ide/2026-2/Plant-As2
         -> /mnt/micdata1/2ide/2026-2/Plant-As2
+
+    If the PV already returns an absolute local path (``/mnt/...``) and there is no
+    shared component with ``linux_mount``, use that path as-is instead of nesting
+    it under the mount.
     """
     mount_parts = _path_parts(linux_mount)
-    remote_parts = _path_parts(remote_path)
+    remote_norm = remote_path.replace("\\", "/")
+    remote_parts = _path_parts(remote_norm)
     if not mount_parts:
-        return Path(remote_path).expanduser()
+        return Path(remote_norm).expanduser()
     if not remote_parts:
         return Path(linux_mount).expanduser()
 
@@ -205,6 +213,10 @@ def combine_linux_mount_path(linux_mount: str, remote_path: str) -> Path:
             if remote_parts[start : start + overlap] == suffix:
                 combined = mount_parts + remote_parts[start + overlap :]
                 return Path("/" + "/".join(combined))
+
+    # Absolute local path (not UNC //host/...): trust the PV rather than nest.
+    if remote_norm.startswith("/") and not remote_norm.startswith("//"):
+        return Path(remote_norm)
 
     return Path(linux_mount).expanduser() / Path(*remote_parts)
 
@@ -221,11 +233,15 @@ def read_output_base_path(config: dict[str, Any]) -> Path | None:
     return Path(remote).expanduser()
 
 
-def resolve_output_dir(config: dict[str, Any], override: Path | None = None) -> Path:
+def resolve_output_dir(
+    config: dict[str, Any], override: Path | None = None, *, create: bool = True
+) -> Path:
     """Return the monitor output directory, creating it if needed.
 
     Default: read ``output_dir_pv`` from *config*, append ``scan_monitor_output``,
     and mkdir -p. *override* bypasses the PV lookup (for ``--output-dir``).
+    With ``create=False`` the directory is only resolved, never created (used by
+    ``--plot-only``, where it is read for past events but never written to).
     """
     if override is not None:
         output_dir = override
@@ -235,7 +251,8 @@ def resolve_output_dir(config: dict[str, Any], override: Path | None = None) -> 
             output_dir = base / "scan_monitor_output"
         else:
             output_dir = Path(config.get("output_dir", "scan_monitor_output"))
-    output_dir.mkdir(parents=True, exist_ok=True)
+    if create:
+        output_dir.mkdir(parents=True, exist_ok=True)
     return output_dir
 
 
@@ -404,10 +421,13 @@ class ScanMonitor:
         live_plot: bool = True,
         live_plot_show_past: bool = False,
         output_dir_override: bool = False,
+        write_files: bool = True,
     ) -> None:
         self.config = config
         self.output_dir = output_dir
-        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.write_files = write_files
+        if self.write_files:
+            self.output_dir.mkdir(parents=True, exist_ok=True)
         self._output_dir_override = output_dir_override
         if output_dir_override or not config.get("output_dir_pv"):
             self._output_base_path = None
@@ -461,11 +481,12 @@ class ScanMonitor:
         self.logger.setLevel(logging.INFO)
         self.logger.handlers.clear()
         fmt = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
-        fh = logging.FileHandler(self.log_path, encoding="utf-8")
-        fh.setFormatter(fmt)
+        if self.write_files:
+            fh = logging.FileHandler(self.log_path, encoding="utf-8")
+            fh.setFormatter(fmt)
+            self.logger.addHandler(fh)
         sh = logging.StreamHandler(sys.stdout)
         sh.setFormatter(fmt)
-        self.logger.addHandler(fh)
         self.logger.addHandler(sh)
 
     def _update_output_paths(self) -> None:
@@ -478,7 +499,8 @@ class ScanMonitor:
     def _switch_output_dir(self, base: Path) -> None:
         """Point outputs at *base*/scan_monitor_output and start a fresh session there."""
         new_output_dir = base / "scan_monitor_output"
-        new_output_dir.mkdir(parents=True, exist_ok=True)
+        if self.write_files:
+            new_output_dir.mkdir(parents=True, exist_ok=True)
         with self._lock:
             self.output_dir = new_output_dir
             self._output_base_path = base
@@ -610,8 +632,9 @@ class ScanMonitor:
             "scan_number": scan_number,
             "values": flag_values,
         }
-        with self.flag_events_path.open("a", encoding="utf-8") as f:
-            f.write(json.dumps(record) + "\n")
+        if self.write_files:
+            with self.flag_events_path.open("a", encoding="utf-8") as f:
+                f.write(json.dumps(record) + "\n")
 
         self.logger.warning(
             "flag event: %s scan_number=%s values=%s",
@@ -810,6 +833,9 @@ class ScanMonitor:
         self._outputs_pending = True
 
     def write_outputs(self) -> None:
+        if not self.write_files:
+            self._plot_needs_update = True
+            return
         self.write_scans_csv()
         self.write_spreadsheet_view()
         self.write_event_time_plot()
@@ -1087,6 +1113,11 @@ def main() -> None:
         action="store_true",
         help="live plot includes events from prior runs in the output dir (default: this session only)",
     )
+    parser.add_argument(
+        "--plot-only",
+        action="store_true",
+        help="watch events in the live plot only; write no log, CSV, JSONL, or PNG files",
+    )
     args = parser.parse_args()
 
     if args.demo:
@@ -1094,18 +1125,32 @@ def main() -> None:
         run_demo(output_dir)
         return
 
+    if args.plot_only and args.no_live_plot:
+        parser.error("--plot-only cannot be combined with --no-live-plot (nothing would be produced)")
+
     config = load_config(args.config)
     apply_environment_variables(config.get("environment_variables"))
-    output_dir = resolve_output_dir(config, args.output_dir)
+    write_files = not args.plot_only
+    try:
+        output_dir = resolve_output_dir(config, args.output_dir, create=write_files)
+    except RuntimeError:
+        if write_files:
+            raise
+        # Plot-only: the output dir is just a source of past events; carry on without it.
+        output_dir = Path(config.get("output_dir", "scan_monitor_output"))
     monitor = ScanMonitor(
         config,
         output_dir,
         live_plot=not args.no_live_plot,
         live_plot_show_past=args.plot_past_events,
         output_dir_override=args.output_dir is not None,
+        write_files=write_files,
     )
+    if args.plot_only:
+        monitor.logger.info("plot-only mode: no files will be written")
     monitor.run()
 
 
 if __name__ == "__main__":
     main()
+

@@ -1,0 +1,50 @@
+[user2ide@electra ~]$ wmctrl -l -G
+0x01e00007  0 10   82   618  217  electra.xray.aps.anl.gov caQtDM V4.4.0 Build=Jan 13 2023 12:31
+0x01e0008c  0 11   82   1000 388  electra.xray.aps.anl.gov 2ida_hutch.ui
+0x01e00125  3 1617 87   580  555  electra.xray.aps.anl.gov 4element_dxp.ui
+0x01e0012e  3 793  620  340  620  electra.xray.aps.anl.gov mappingControl.ui
+0x0260587f  0 1072 1324 1588 509  electra.xray.aps.anl.gov user2ide@electra:~
+0x02c00007  3 1171 598  2274 835  electra.xray.aps.anl.gov Beamline Control
+0x02a00007  5 4274 260  672  532  electra.xray.aps.anl.gov System Monitor
+0x03200004  0 3346 248  1730 1016 electra.xray.aps.anl.gov BELY Portal Log Document Details and 1 more page - Profile 1 - Microsoft​ Edge
+0x046000f3  0 3312 1312 128  128                       N/A Java
+0x04800007  2 2568 76   609  76   electra.xray.aps.anl.gov ImageJ
+0x0480004b  2 1975 916  1216 889  electra.xray.aps.anl.gov Log
+0x0480008d  2 1680 84   892  81   electra.xray.aps.anl.gov Image J EPICS_NTNDA_Viewer Plugin
+0x02671353  6 152  340  708  509  electra.xray.aps.anl.gov user2ide@electra:~
+0x05600008  6 5442 316  1774 1007 electra.xray.aps.anl.gov mda
+0x01e00631  0 1011 82   148  1006 electra.xray.aps.anl.gov topMotors.ui
+0x01e00696  3 2637 84   800  402  electra.xray.aps.anl.gov 2ide_scan_setup.ui
+0x01e006b8  3 463  351  452  246  electra.xray.aps.anl.gov simple_mca_small.ui
+0x04800333  2 2256 202  149  295  electra.xray.aps.anl.gov B&C
+0x01e0072a  2 1498 750  370  220  electra.xray.aps.anl.gov motorx_more.ui
+0x01e0078b  2 1874 752  370  220  electra.xray.aps.anl.gov motorx_more.ui
+0x01e0087b  0 1161 535  145  205  electra.xray.aps.anl.gov topMotors8.ui
+0x01e0088a  2 1126 750  370  220  electra.xray.aps.anl.gov motorx_more.ui
+0x01e00899  0 1160 309  145  205  electra.xray.aps.anl.gov topMotors8.ui
+0x01e008a8  2 754  750  370  220  electra.xray.aps.anl.gov motorx_more.ui
+0x01e00da7  3 466  85   452  246  electra.xray.aps.anl.gov simple_mca_small.ui
+0x01e00dbf  3 10   349  452  246  electra.xray.aps.anl.gov simple_mca_small.ui
+0x01e00dd7  3 10   83   452  246  electra.xray.aps.anl.gov simple_mca_small.ui
+0x01e011a4  2 321  84   1521 642  electra.xray.aps.anl.gov 2ide_microscope.ui
+0x0480bc7d  2 2416 185  1034 789  electra.xray.aps.anl.gov 2idAravis2:Pva1:Image
+0x0500c850  6 10   82   1406 136  electra.xray.aps.anl.gov MAPS v 1.8.0.00      1. May, 2017
+0x0500cc43  6 795  193  1313 1219 electra.xray.aps.anl.gov MAPS: multi element window  (M)  (updating) 
+0x0500d224  6 2091 215  1196 1174 electra.xray.aps.anl.gov MAPS: colocalization window  (XS)  (updating) 
+0x0500d515  6 1583 103  1524 862  electra.xray.aps.anl.gov MAPS: spec tool
+0x01e01f4b  2 12   749  370  220  electra.xray.aps.anl.gov motorx_more.ui
+0x01e01f5a  2 383  748  370  220  electra.xray.aps.anl.gov motorx_more.ui
+0x01e01f75  0 1310 93   370  220  electra.xray.aps.anl.gov motorx_more.ui
+0x01e01f99  0 1307 336  325  346  electra.xray.aps.anl.gov XIA_shutter.ui
+0x01e02017  2 10   84   310  640  electra.xray.aps.anl.gov IDControl_Planar.adl
+0x01e02029  0 472  957  535  365  electra.xray.aps.anl.gov kohzuSeqCtl_All.ui
+0x01e021b3  0 1161 83   145  205  electra.xray.aps.anl.gov topMotors8.ui
+0x06878361  6 3362 1410 491  501  electra.xray.aps.anl.gov Screenshot
+0x01a002d0  0 5130 254  267  72   electra.xray.aps.anl.gov NoMachine Desktop Viewed
+0x01e02589  0 10   483  999  449  electra.xray.aps.anl.gov 2xfm_beamline.ui
+0x01e02592  3 13   617  389  687  electra.xray.aps.anl.gov scan_full.ui
+0x01e0259b  3 402  617  389  687  electra.xray.aps.anl.gov scan_full.ui
+0x01e025ad  3 920  84   697  459  electra.xray.aps.anl.gov NDFileNetCDF.ui
+0x01e025b6  3 2199 85   680  650  electra.xray.aps.anl.gov SIS38XX.ui
+0x027aa112  1 102  322  708  509  electra.xray.aps.anl.gov user2ide@electra:~
+[user2ide@electra ~]$ 

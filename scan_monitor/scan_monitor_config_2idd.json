@@ -1,0 +1,192 @@
+{
+    "_README": "Flag conditions are NOT expressed in JSON. Each flag's calculation lives in scan_monitor_flags.py. The 'inputs' PVs listed under each flag are read every poll and passed as the context dict (keyed by label) to the matching flag function, which returns True when the fault condition is met. 'flag_events' is the diagnostic snapshot logged whenever any flag fires.",
+  
+    "scan_number_pv": "2idd:saveData_scanNumber",
+    "output_dir_pv": "2idd:saveData_fileSystem",
+    "linux_data_mount": "/mnt/micdata1/2idd/",
+    "environment_variables": {
+      "EPICS_CA_ADDR_LIST": "164.54.113.168 10.54.113.120 10.54.113.240 10.54.113.240 10.54.113.58"
+    },
+  
+    "flag_confirm_s": 5.0,
+  
+    "scan_started": [
+      {
+        "pv": "2idd:Fscan1.BUSY",
+        "when": "eq",
+        "value": 1,
+        "comment": "Execute-scan goes active at the start of a 2D scan when value changes from 0 to 1"
+      }
+    ],
+  
+    "scan_parameters": [
+      {"label": "saveData_message", "pv": "2idd:saveData_message", "as": "string"},
+      {"label": "next_scan_number", "pv": "2idd:saveData_scanNumber"},
+      {"label": "dwell_time", "pv": "2idd:Flyscans:Setup:DwellTime.VAL"},
+      {"label": "Xnpts", "pv": "2idd:FscanH.NPTS"},
+      {"label": "Ynpts", "pv": "2idd:Fscan1.NPTS"},
+      {"label": "Xstart", "pv": "2idd:FscanH.P1SP"},
+      {"label": "Xend", "pv": "2idd:FscanH.P1EP"},
+      {"label": "Xstep", "pv": "2idd:FscanH.P1SI"},
+      {"label": "Xwidth", "pv": "2idd:FscanH.P1WD"},
+      {"label": "Xcenter", "pv": "2idd:FscanH.P1CP"},
+      {"label": "Ystart", "pv": "2idd:Fscan1.P1SP"},
+      {"label": "Yend", "pv": "2idd:Fscan1.P1EP"},
+      {"label": "Ystep", "pv": "2idd:Fscan1.P1SI"},
+      {"label": "Ywidth", "pv": "2idd:Fscan1.P1WD"},
+      {"label": "Ycenter", "pv": "2idd:Fscan1.P1CP"}
+    ],
+  
+    "flags": {
+      "beam_dump": {
+        "comment": "Storage ring beam lost: S:ActualMode leaves user/top-up mode (4) and/or ring current collapses.",
+        "inputs": [
+          {"label": "actual_mode", "pv": "S:ActualMode"},
+          {"label": "desired_mode", "pv": "S:DesiredMode"}
+        ]
+      },
+  
+    "scan_paused": {
+      "comment": "Scan pause record went active.",
+      "inputs": [
+        {"label": "is_paused", "pv": "2idd:FscanPause.VAL"},
+        {"label": "is_wait_inner", "pv": "2idd:FscanH.WCNT"},
+        {"label": "is_wait_outer", "pv": "2idd:Fscan1.WCNT"},
+        {"label": "scan_busy", "pv": "2idd:Fscan1.BUSY"}
+      ]
+    },
+  
+    "scan_unpaused": {
+      "comment": "Scan pause record went inactive.",
+      "inputs": [
+        {"label": "is_paused", "pv": "2idd:FscanPause.VAL"},
+        {"label": "is_wait_inner", "pv": "2idd:FscanH.WCNT"},
+        {"label": "is_wait_outer", "pv": "2idd:Fscan1.WCNT"},
+        {"label": "scan_busy", "pv": "2idd:Fscan1.BUSY"}
+      ]
+    },
+  
+    "scan_aborted": {
+      "comment": "Scan was aborted.",
+      "inputs": [
+        {"label": "message_outer", "pv": "2idd:Fscan1.SMSG", "as": "string"},
+        {"label": "message_inner", "pv": "2idd:FscanH.SMSG", "as": "string"}
+      ]
+    },
+  
+    "struck_stuck_acquiring": {
+      "comment": "MCS 3820 remains acquiring even after receiving all triggers (current_channel reached nuse_all but Acquiring stays 1 and scan is no longer busy).",
+      "inputs": [
+        {"label": "acquiring", "pv": "2idd:3820:Acquiring"},
+        {"label": "nuse_all", "pv": "2idd:3820:NuseAll"},
+        {"label": "current_channel", "pv": "2idd:3820:CurrentChannel"},
+        {"label": "scan_busy", "pv": "2idd:Fscan1.BUSY"},
+        {"label": "is_paused", "pv": "2idd:FscanPause.VAL"},
+        {"label": "is_wait_inner", "pv": "2idd:FscanH.WCNT"},
+        {"label": "is_wait_outer", "pv": "2idd:Fscan1.WCNT"}
+        
+      ]
+    },
+  
+    "struck_miss_trigger": {
+      "comment": "MCS 3820 still acquiring and missing triggers (current_channel < nuse_all) but the stage already completed its motion (requested ~ actual position).",
+      "inputs": [
+        {"label": "scan_busy", "pv": "2idd:Fscan1.BUSY"},
+        {"label": "acquiring", "pv": "2idd:3820:Acquiring"},
+        {"label": "nuse_all", "pv": "2idd:3820:NuseAll"},
+        {"label": "dwell_time", "pv": "2idd:Flyscans:Setup:DwellTime.VAL"},
+        {"label": "elapsed_time", "pv": "2idd:3820:ElapsedReal"},
+        {"label": "current_channel", "pv": "2idd:3820:CurrentChannel"},
+        {"label": "requested_position", "pv": "2idd:m40.VAL"},
+        {"label": "actual_position", "pv": "2idd:m40.RBV"}
+      ]
+    },
+
+    "xmap_miss_trigger": {
+      "comment": "XMAP missed triggers: acq_counter lags acq_target while struck is done.",
+      "inputs": [
+        {"label": "scan_busy", "pv": "2idd:Fscan1.BUSY"},
+        {"label": "acq_target", "pv": "2iddXMAP:PixelsPerRun"},
+        {"label": "acq_counter", "pv": "2iddXMAP:dxp1:CurrentPixel"},
+        {"label": "struck_current", "pv": "2idd:3820:CurrentChannel"},
+        {"label": "struck_all", "pv": "2idd:3820:NuseAll"},
+        {"label": "struck_acquiring", "pv": "2idd:3820:Acquiring"}
+      ]
+    },
+
+    "xmap_lost_frames": {
+      "comment": "xmap lost frames: number of saved frames differs from received triggers and the HDF writer remains capturing.",
+      "inputs": [
+        {"label": "scan_busy", "pv": "2idd:Fscan1.BUSY"},
+        {"label": "num_frames", "pv": "2iddXMAP:netCDF1:NumCapture_RBV"},
+        {"label": "saved_frames", "pv": "2iddXMAP:netCDF1:NumCaptured_RBV"},
+        {"label": "struck_current", "pv": "2idd:3820:CurrentChannel"},
+        {"label": "struck_all", "pv": "2idd:3820:NuseAll"},
+        {"label": "struck_acquiring", "pv": "2idd:3820:Acquiring"}
+      ]
+    },
+
+    "write_error": {
+      "comment": "xmap write error: the detector is in an error state and the HDF writer is not capturing.",
+      "inputs": [
+        {"label": "scan_busy", "pv": "2idd:Fscan1.BUSY"},
+        {"label": "write_status", "pv": "2iddXMAP:netCDF1:WriteStatus"}
+      ]
+    },
+
+    "filename_not_insync": {
+      "comment": "XMAP filename PVs are out of sync with the scan.",
+      "inputs": [
+        {"label": "scan_busy", "pv": "2idd:Fscan1.BUSY"},
+        {"label": "capture", "pv": "2iddXMAP:netCDF1:Capture_RBV"},
+        {"label": "detector_file_number", "pv": "2iddXMAP:netCDF1:FileNumber"},
+        {"label": "detector_file_name", "pv": "2iddXMAP:netCDF1:FileName", "as": "string"},
+        {"label": "scan_line", "pv": "2idd:Fscan1.CPT"},
+        {"label": "next_scan_number", "pv": "2idd:saveData_scanNumber"}
+      ]
+    },
+
+    "stage_stuck": {
+      "comment": "Sample stage does not advance to its next scan position: requested != actual position persists while the scan is busy and velocity is ~0.",
+      "inputs": [
+        {"label": "struck_acquiring", "pv": "2idd:3820:Acquiring"},
+        {"label": "inner_busy", "pv": "2idd:FscanH.BUSY"},
+        {"label": "is_moving", "pv": "2idd:m40.DMOV"},
+        {"label": "struck_current", "pv": "2idd:3820:CurrentChannel"},
+        {"label": "elapsed_time", "pv": "2idd:3820:ElapsedReal"}
+      ]
+    },
+
+    "memory_high": {
+      "comment": "Host OS memory usage crossed above 60%. Fires once; resets when usage drops to 50%.",
+      "inputs": []
+    },
+
+    "memory_critical": {
+      "comment": "Host OS memory usage crossed above 90%. Fires once; resets when usage drops to 50%.",
+      "inputs": []
+    }
+  },
+
+  "flag_events": [
+    {"label": "scan_execute", "pv": "2idd:Fscan1.EXSC"},
+    {"label": "acquiring", "pv": "2idd:3820:Acquiring"},
+    {"label": "dwell_time", "pv": "2idd:Flyscans:Setup:DwellTime.VAL"},
+    {"label": "elapsed_real", "pv": "2idd:3820:ElapsedReal"},
+    {"label": "nuse_all", "pv": "2idd:3820:NuseAll"},
+    {"label": "current_channel", "pv": "2idd:3820:CurrentChannel"},
+    {"label": "acq_target", "pv": "2iddXMAP:PixelsPerRun"},
+    {"label": "acq_counter", "pv": "2iddXMAP:dxp1:CurrentPixel"},
+    {"label": "is_acquiring", "pv": "2iddXMAP:Acquiring"},
+    {"label": "collect_mode", "pv": "2iddXMAP:CollectMode"},
+    {"label": "capture", "pv": "2iddXMAP:netCDF1:Capture_RBV"},
+    {"label": "full_file_name", "pv": "2iddXMAP:netCDF1:FullFileName_RBV", "as": "string"},
+    {"label": "file_path_exists", "pv": "2iddXMAP:netCDF1:FilePathExists_RBV"},
+    {"label": "requested_position", "pv": "2idd:m40.VAL"},
+    {"label": "actual_position", "pv": "2idd:m40.RBV"},
+    {"label": "velocity", "pv": "2idd:m40.VELO"},
+    {"label": "vmax", "pv": "2idd:m40.VMAX"},
+    {"label": "beam_current", "pv": "S:SRcurrentAI"},
+    {"label": "actual_mode", "pv": "S:ActualMode"}
+  ]
+}

@@ -1,0 +1,43 @@
+sec2idd% wmctrl -l -G
+0x01e00007  2 10   82   618  217  sec2idd.xray.aps.anl.gov caQtDM V4.4.0 Build=Jan 13 2023 12:31
+0x01e00167  0 1500 578  145  205  sec2idd.xray.aps.anl.gov topMotors8.ui
+0x01e00178  0 551  947  185  200  sec2idd.xray.aps.anl.gov SR570_tiny.ui
+0x01e00182  0 742  948  185  200  sec2idd.xray.aps.anl.gov SR570_tiny.ui
+0x01e00193  0 555  1173 185  200  sec2idd.xray.aps.anl.gov SR570_tiny.ui
+0x01e0019d  0 743  1171 185  200  sec2idd.xray.aps.anl.gov SR570_tiny.ui
+0x01e001a7  0 620  491  325  346  sec2idd.xray.aps.anl.gov XIA_shutter.ui
+0x01e001c0  0 931  559  1632 812  sec2idd.xray.aps.anl.gov 2IDD_microscopeV2.ui
+0x01e001f0  0 10   82   1000 388  sec2idd.xray.aps.anl.gov 2ida_hutch.ui
+0x01e001fa  0 1009 82   1003 446  sec2idd.xray.aps.anl.gov 2idd_beamline.ui
+0x01e0020b  0 2009 82   549  376  sec2idd.xray.aps.anl.gov He_levels.ui
+0x01e0022a  1 793  82   389  687  sec2idd.xray.aps.anl.gov scan_full.ui
+0x01e00234  1 400  82   389  687  sec2idd.xray.aps.anl.gov scan_full.ui
+0x01e0023e  1 10   82   389  687  sec2idd.xray.aps.anl.gov scan_full.ui
+0x01e0024f  1 10   792  389  687  sec2idd.xray.aps.anl.gov scan_full.ui
+0x01e00259  1 400  791  389  687  sec2idd.xray.aps.anl.gov scan_full.ui
+0x01e00263  1 794  790  400  400  sec2idd.xray.aps.anl.gov scan_saveData.ui
+0x01e0026d  1 1374 846  1175 563  sec2idd.xray.aps.anl.gov batchscan_v5.ui
+0x01e003a9  1 1890 82   680  650  sec2idd.xray.aps.anl.gov SIS38XX.ui
+0x01e003ba  1 795  1088 460  400  sec2idd.xray.aps.anl.gov simple_mca.ui
+0x01e003d4  1 1311 82   580  555  sec2idd.xray.aps.anl.gov 4element_dxp.ui
+0x01e003de  1 1184 82   340  620  sec2idd.xray.aps.anl.gov mappingControl.ui
+0x02400006  2 10   82   618  214  sec2idd.xray.aps.anl.gov caQtDM V4.4.1 Build=Oct 24 2023 11:47
+0x02a000f3  2 2432 1312 128  128                       N/A Java
+0x02c00007  2 901  78   609  76   sec2idd.xray.aps.anl.gov ImageJ
+0x02c0004b  2 124  713  310  229  sec2idd.xray.aps.anl.gov Log
+0x02c00090  2 10   82   892  81   sec2idd.xray.aps.anl.gov Image J EPICS_NTNDA_Viewer Plugin
+0x02c000be  2 841  188  650  371  sec2idd.xray.aps.anl.gov 2idAV6:Pva1:Image (33.3%)
+0x02e00008  2 -48  1344 1117 748  sec2idd.xray.aps.anl.gov vid
+0x02400339  2 1500 82   1070 850  sec2idd.xray.aps.anl.gov NDFileHDF5.ui
+0x0300000a  3 -40  24   1320 1412 sec2idd.xray.aps.anl.gov Terminal
+0x02400359  2 1508 579  1070 830  sec2idd.xray.aps.anl.gov ADAravis.ui
+0x01e00e08  0 10   112  148  1006 sec2idd.xray.aps.anl.gov topMotors.ui
+0x01e00e34  0 151  483  485  475  sec2idd.xray.aps.anl.gov scaler16_full.ui
+0x01e00e4f  0 17   987  535  365  sec2idd.xray.aps.anl.gov kohzuSeqCtl_All.ui
+0x01e00e86  1 1179 659  697  459  sec2idd.xray.aps.anl.gov NDFileNetCDF.ui
+sec2idd% 
+
+
+
+
+
