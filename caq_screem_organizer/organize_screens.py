@@ -1,28 +1,28 @@
 #!/usr/bin/env python3
-"""Organize `wmctrl -l -G` output by workspace (desktop) number.
+"""Build a caQtDM launcher .sh from open screen positions + caQtDM logs.
 
-The input is a capture of `wmctrl -l -G`, optionally including the surrounding
-shell prompt lines.  Each window row looks like:
-
-    0x01e0008c  0 11   82   1000 388  host.example.gov  2ida_hutch.ui
-    ^window id  ^ws ^x   ^y   ^w   ^h  ^host             ^title
-
-Rows are grouped by the workspace number and printed under a header for each
-workspace, aligned into columns.
+Runs `wmctrl -l -G`, keeps windows whose titles end in .ui/.adl, sorts them by
+workspace then position, and fills in macros from caQtDM message-window logs
+(`last file: ...ui, macro: ...`). Writes `<input_stem>.sh`.
 
 Usage:
-    ./organize_screens.py 2xfm_screens.txt
-    ./organize_screens.py 2xfm_screens.txt -s position -o sorted.txt
-    wmctrl -l -G | ./organize_screens.py
+    ./organize_screens.py 2idd_caqtdm_logs.txt
+    ./organize_screens.py 2idd_caqtdm_logs.txt -w 2idd_screens.txt   # offline
 """
+
+from __future__ import annotations
 
 import argparse
 import re
+import subprocess
 import sys
-from collections import defaultdict
+from collections import Counter, defaultdict, deque
+from pathlib import Path
 
-# window-id  desktop  x  y  width  height  host  title
-ROW_RE = re.compile(
+SCREEN_SUFFIXES = (".ui", ".adl")
+SLEEP_SECONDS = 3
+
+WMCTRL_RE = re.compile(
     r"^\s*(?P<wid>0x[0-9a-fA-F]+)\s+"
     r"(?P<workspace>-?\d+)\s+"
     r"(?P<x>-?\d+)\s+(?P<y>-?\d+)\s+"
@@ -31,86 +31,188 @@ ROW_RE = re.compile(
     r"(?P<title>.*?)\s*$"
 )
 
-FIELDS = ("wid", "workspace", "x", "y", "w", "h", "host", "title")
+# 29-07-2026 12:20:03 last file: /path/scaler16_full.ui, macro: P=2idd:,S=scaler1
+# 29-07-2026 11:49:36 last file: /path/2ida_hutch.ui
+LAST_FILE_RE = re.compile(
+    r"last file:\s*(?P<path>\S+\.(?:ui|adl))"
+    r"(?:,\s*macro:\s*(?P<macro>.*))?$",
+    re.IGNORECASE,
+)
 
 
-def parse(lines):
-    """Split lines into (windows, skipped) where windows are dicts of FIELDS."""
-    windows, skipped = [], []
+def is_screen_title(title: str) -> bool:
+    return title.strip().endswith(SCREEN_SUFFIXES)
+
+
+def parse_wmctrl_lines(lines) -> list[dict]:
+    windows = []
     for line in lines:
-        line = line.rstrip("\n")
-        if not line.strip():
+        match = WMCTRL_RE.match(line.rstrip("\n"))
+        if not match:
             continue
-        match = ROW_RE.match(line)
-        if match:
-            win = match.groupdict()
-            for key in ("workspace", "x", "y", "w", "h"):
-                win[key] = int(win[key])
-            windows.append(win)
-        else:
-            skipped.append(line)
-    return windows, skipped
+        win = match.groupdict()
+        for key in ("workspace", "x", "y", "w", "h"):
+            win[key] = int(win[key])
+        windows.append(win)
+    return windows
 
 
-def sort_key(mode):
-    if mode == "title":
-        return lambda w: (w["title"].lower(), w["x"], w["y"])
-    if mode == "position":
-        return lambda w: (w["x"], w["y"])
-    if mode == "size":
-        return lambda w: (-(w["w"] * w["h"]), w["title"].lower())
-    return lambda w: w["wid"]  # "id"
+def run_wmctrl() -> list[dict]:
+    try:
+        proc = subprocess.run(
+            ["wmctrl", "-l", "-G"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError as exc:
+        raise RuntimeError("wmctrl not found on PATH") from exc
+    except subprocess.CalledProcessError as exc:
+        err = (exc.stderr or exc.stdout or "").strip()
+        raise RuntimeError(f"wmctrl failed: {err or exc}") from exc
+    return parse_wmctrl_lines(proc.stdout.splitlines())
 
 
-def format_groups(windows, mode, show_host):
-    """Render windows grouped by workspace as a list of output lines."""
-    groups = defaultdict(list)
-    for win in windows:
-        groups[win["workspace"]].append(win)
-
-    cols = ["wid", "x", "y", "w", "h"] + (["host"] if show_host else []) + ["title"]
-    widths = {c: max((len(str(w[c])) for w in windows), default=0) for c in cols}
-
-    out = []
-    for workspace in sorted(groups):
-        members = sorted(groups[workspace], key=sort_key(mode))
-        if out:
-            out.append("")
-        out.append(f"=== workspace {workspace} ({len(members)} windows) ===")
-        for win in members:
-            cells = [f"{str(win[c]):<{widths[c]}}" for c in cols[:-1]]
-            cells.append(win["title"])
-            out.append("  " + " ".join(cells).rstrip())
-    return out
+def parse_log_macros(lines) -> dict[str, list[str | None]]:
+    """Map screen basename -> chronological macros from `last file:` lines."""
+    macros: dict[str, list[str | None]] = defaultdict(list)
+    for raw in lines:
+        match = LAST_FILE_RE.search(raw.rstrip("\n"))
+        if not match:
+            continue
+        screen = Path(match.group("path")).name
+        macro = match.group("macro")
+        if macro is not None:
+            macro = macro.strip() or None
+        macros[screen].append(macro)
+    return macros
 
 
-def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("infile", nargs="?", type=argparse.FileType("r"),
-                        default=sys.stdin, help="wmctrl -l -G capture (default: stdin)")
-    parser.add_argument("-o", "--outfile", type=argparse.FileType("w"),
-                        default=sys.stdout, help="output file (default: stdout)")
-    parser.add_argument("-s", "--sort", choices=("id", "title", "position", "size"),
-                        default="title", help="sort order within a workspace (default: title)")
-    parser.add_argument("--no-host", action="store_true",
-                        help="omit the host column")
-    parser.add_argument("--show-skipped", action="store_true",
-                        help="report lines that did not parse as window rows")
+def screen_windows(windows: list[dict]) -> list[dict]:
+    screens = [w for w in windows if is_screen_title(w["title"])]
+    screens.sort(key=lambda w: (w["workspace"], w["x"], w["y"], w["title"].lower()))
+    return screens
+
+
+def assign_macros(screens: list[dict], macros: dict[str, list[str | None]]) -> tuple[int, int]:
+    """Attach macros to screens. Uses the N most recent log opens per title.
+
+    Returns (with_macro, without_macro).
+    """
+    needed = Counter(Path(w["title"].strip()).name for w in screens)
+    pools: dict[str, deque[str | None]] = {}
+    for name, count in needed.items():
+        history = macros.get(name, [])
+        recent = list(history[-count:]) if history else []
+        if len(recent) < count:
+            recent = [None] * (count - len(recent)) + recent
+        pools[name] = deque(recent)
+
+    for win in screens:
+        name = Path(win["title"].strip()).name
+        win["macro"] = pools[name].popleft()
+
+    with_macro = sum(1 for w in screens if w.get("macro"))
+    return with_macro, len(screens) - with_macro
+
+
+def format_launch(win: dict, background: bool = True) -> str:
+    title = Path(win["title"].strip()).name
+    parts = ["caQtDM", "-x", "-attach", f"-dg +{win['x']}+{win['y']}"]
+    if win.get("macro"):
+        parts.append(f'-macro "{win["macro"]}"')
+    parts.append(title)
+    line = " ".join(parts)
+    return f"{line} &" if background else line
+
+
+def render_script(screens: list[dict], source_name: str) -> str:
+    lines = [
+        "#!/bin/bash",
+        f"# Generated by organize_screens.py from {source_name}",
+        "# Review caQtDM path, EPICS env, and macros before running.",
+        "",
+        '# alias caQtDM="/APSshare/caqtdm/caqtdm-4.4.1/caQtDM_Binaries/rhel9-x86_64/caQtDM"',
+        "",
+    ]
+
+    current_ws = None
+    for win in screens:
+        if win["workspace"] != current_ws:
+            if current_ws is not None:
+                lines.append("")
+            current_ws = win["workspace"]
+            lines.append(f"wmctrl -s {current_ws}")
+        lines.append(format_launch(win))
+        lines.append(f"sleep {SLEEP_SECONDS}")
+
+    lines.append("")
+    return "\n".join(lines)
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "logfile",
+        type=Path,
+        help="caQtDM message-window log (output is <stem>.sh)",
+    )
+    parser.add_argument(
+        "-w",
+        "--wmctrl-file",
+        type=Path,
+        help="use this wmctrl -l -G capture instead of running wmctrl",
+    )
     args = parser.parse_args(argv)
 
-    windows, skipped = parse(args.infile)
-    if not windows:
-        parser.error("no wmctrl window rows found in input")
+    if not args.logfile.is_file():
+        parser.error(f"input file not found: {args.logfile}")
 
-    for line in format_groups(windows, args.sort, not args.no_host):
-        print(line, file=args.outfile)
+    log_lines = args.logfile.read_text(encoding="utf-8", errors="replace").splitlines()
+    macros = parse_log_macros(log_lines)
+    if not macros:
+        parser.error(f"no 'last file:' entries found in {args.logfile}")
 
-    if args.show_skipped and skipped:
-        print("\n=== skipped lines ===", file=args.outfile)
-        for line in skipped:
-            print("  " + line, file=args.outfile)
+    if args.wmctrl_file:
+        if not args.wmctrl_file.is_file():
+            parser.error(f"wmctrl file not found: {args.wmctrl_file}")
+        windows = parse_wmctrl_lines(
+            args.wmctrl_file.read_text(encoding="utf-8", errors="replace").splitlines()
+        )
+        source = str(args.wmctrl_file)
+        if not windows:
+            parser.error(f"no wmctrl rows found in {args.wmctrl_file}")
+    else:
+        try:
+            windows = run_wmctrl()
+            source = "wmctrl -l -G"
+        except RuntimeError as exc:
+            parser.error(f"{exc} (or pass -w FILE with a wmctrl -l -G capture)")
 
+    screens = screen_windows(windows)
+    if not screens:
+        parser.error(f"no .ui/.adl screen windows found via {source}")
+
+    with_macro, without_macro = assign_macros(screens, macros)
+
+    out_path = args.logfile.with_suffix(".sh")
+    out_path.write_text(render_script(screens, args.logfile.name), encoding="utf-8")
+    try:
+        out_path.chmod(out_path.stat().st_mode | 0o111)
+    except OSError:
+        pass
+
+    by_ws = defaultdict(int)
+    for win in screens:
+        by_ws[win["workspace"]] += 1
+    summary = ", ".join(f"ws{ws}={n}" for ws, n in sorted(by_ws.items()))
+    print(
+        f"wrote {out_path} ({len(screens)} screens: {summary}; "
+        f"{with_macro} with macros, {without_macro} without)"
+    )
     return 0
 
 

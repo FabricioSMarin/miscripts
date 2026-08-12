@@ -1,0 +1,220 @@
+29-07-2026 11:49:12 Controlsystem plugins: attempt to load from /APSshare/caqtdm/caqtdm-4.3.0/caQtDM_Binaries/rhel9-x86_64/controlsystems
+29-07-2026 11:49:12 Epics3Plugin: epics version: EPICS 7.0.4.1
+29-07-2026 11:49:12 caQtDM will suspend epics connections for data in invisible tabs while CAQTDM_OPTIMIZE_EPICS3CONNECTIONS not set to TRUE 
+29-07-2026 11:49:12 Info: plugin archiveSF loaded
+29-07-2026 11:49:12 Info: plugin demo loaded
+29-07-2026 11:49:12 Info: plugin environment loaded
+29-07-2026 11:49:12 Info: plugin epics3 loaded
+29-07-2026 11:49:12 Info: plugin epics4 loaded
+29-07-2026 11:49:12 environment variable CAQTDM_TIMEOUT_HOURS could be set for quitting caQtDM automatically after some time
+29-07-2026 11:49:14 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2ida2/2ida2App/op/ui/ 
+29-07-2026 11:49:14 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2ida2/iocBoot/ioc2ida2/softioc/../../../2ida2App/op/ui/2ida2.ui, macro: P=2ida2:
+29-07-2026 11:49:35 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2ida2/2ida2App/op/ui/ 
+29-07-2026 11:49:36 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2ida2/iocBoot/ioc2ida2/softioc/../../../2ida2App/op/ui/2ida_hutch.ui
+29-07-2026 11:49:56 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_1/ioc/2idd/2iddApp/op/ui/ 
+29-07-2026 11:49:56 last file: /net/s2dserv/xorApps/epics/synApps_6_1/ioc/2idd/2iddApp/op/ui/2idd_beamline.ui
+29-07-2026 12:20:03 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/scaler-4-1/scalerApp/op/ui/autoconvert/ 
+29-07-2026 12:20:03 last file: /APSshare/epics/synApps_6_3/support/scaler-4-1//scalerApp/op/ui/autoconvert/scaler16_full.ui, macro: P=2idd:,S=scaler1
+29-07-2026 12:20:05 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/scaler-4-1/scalerApp/op/ui/autoconvert/ 
+29-07-2026 12:20:05 last file: /APSshare/epics/synApps_6_3/support/scaler-4-1//scalerApp/op/ui/autoconvert/scaler32_full.ui, macro: P=2idd:3820:,S=scaler1
+29-07-2026 12:20:33 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 12:20:33 unresolved macros present, press context in display to obtain a list
+29-07-2026 12:20:33 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/topMotors.ui, macro: P=2idd:,M1=m1,M2=m2,M3=m3,M4=m4,M5=m5,M6=m6,M7=m7,M8=m8,M9=m9,M10=m10,M11=m11,M12=m12,M13=m13,M14=m14,M15=m15,M16=m16,M17=m17,M18=m18,M19=m19,M20=m20,M21=m21,M22=m22,M23=m23,M24=m24,M25=m25,M26=m26,M27=m27,M28=m28,M29=m29,M30=m30,M31=m31,M32=m32,M33=m33,M34=m34,M35=m35,M36=m36,M37=m37,M38=m38,M39=m39,M40=m40,M41=m41,M42=m42,M43=m43,M44=m44,M45=m45,M46=m46,M47=m47,M48=m48
+29-07-2026 12:20:35 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/motor-R7-3-1/motorApp/op/ui/autoconvert/ 
+29-07-2026 12:20:35 last file: /APSshare/epics/synApps_6_3/support/motor-R7-3-1//motorApp/op/ui/autoconvert/topMotors8.ui, macro: P=2idd:,M1=m49,M2=m50,M3=m51,M4=m52,M5=m53,M6=m54,M7=m55,M8=m56
+29-07-2026 12:20:36 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/motor-R7-3-1/motorApp/op/ui/autoconvert/ 
+29-07-2026 12:20:36 last file: /APSshare/epics/synApps_6_3/support/motor-R7-3-1//motorApp/op/ui/autoconvert/topMotors8.ui, macro: P=2idd:,M1=m57,M2=m58,M3=m59,M4=m60,M5=m61,M6=m62,M7=m63,M8=m64
+29-07-2026 12:20:58 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/ip-R2-22/ipApp/op/ui/autoconvert/ 
+29-07-2026 12:20:58 last file: /APSshare/epics/synApps_6_3/support/ip-R2-22//ipApp/op/ui/autoconvert/SR570_tiny.ui, macro: P=2iddfS1:,A=A1
+29-07-2026 12:21:01 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/ip-R2-22/ipApp/op/ui/autoconvert/ 
+29-07-2026 12:21:01 last file: /APSshare/epics/synApps_6_3/support/ip-R2-22//ipApp/op/ui/autoconvert/SR570_tiny.ui, macro: P=2iddfS1:,A=A2
+29-07-2026 12:21:24 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/ip-R2-22/ipApp/op/ui/autoconvert/ 
+29-07-2026 12:21:24 last file: /APSshare/epics/synApps_6_3/support/ip-R2-22//ipApp/op/ui/autoconvert/SR570_tiny.ui, macro: P=2iddfS1:,A=A3
+29-07-2026 12:21:33 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/ip-R2-22/ipApp/op/ui/autoconvert/ 
+29-07-2026 12:21:33 last file: /APSshare/epics/synApps_6_3/support/ip-R2-22//ipApp/op/ui/autoconvert/SR570_tiny.ui, macro: P=2iddfS1:,A=A4
+29-07-2026 12:21:55 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/optics-R2-14/opticsApp/op/ui/autoconvert/ 
+29-07-2026 12:21:55 last file: /APSshare/epics/synApps_6_3/support/optics-R2-14//opticsApp/op/ui/autoconvert/XIA_shutter.ui, macro: P=2iddfS1:,S=s1:
+29-07-2026 12:22:08 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2ida2/2ida2App/op/ui/ 
+29-07-2026 12:22:08 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2ida2/iocBoot/ioc2ida2/softioc/../../../2ida2App/op/ui/BPM.ui, macro: P=2iddtmm2:, R=
+29-07-2026 12:22:11 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_1/ioc/2idd/2iddApp/op/ui/ 
+29-07-2026 12:22:11 unresolved macros present, press context in display to obtain a list
+29-07-2026 12:22:12 last file: /net/s2dserv/xorApps/epics/synApps_6_1/ioc/2idd/2iddApp/op/ui/2IDD_microscopeV2.ui, macro: P=2idd:,S=scanAux,PO=2idd:,o_x=m11,o_y=m12,PS=2idd:,s=Slit_1,s_x=Slit1H,s_y=Slit1V,PC=2idd:,c_x=m1,c_y=m2,PZ=2idd:,z_x=m21,z_y=m4,z_z=m44,z_zl=m22,PT=2idd:,t_x=m40,t_y=m39,t_z=m36,p_x=m33,p_y=m35,mPV=2idd:,vx=junk,vy=m23,PE=2ida2:,PM=2idd:,PCS=2iddfS1:,DPCX=m19,DPCY=m7,B=1:
+29-07-2026 12:22:39 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/scaler-4-1/scalerApp/op/ui/autoconvert/ 
+29-07-2026 12:22:39 last file: /APSshare/epics/synApps_6_3/support/scaler-4-1//scalerApp/op/ui/autoconvert/scaler32_more.ui, macro: P=2idd:3820:,S=scaler1
+29-07-2026 12:22:40 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/scaler-4-1/scalerApp/op/ui/autoconvert/ 
+29-07-2026 12:22:40 last file: /APSshare/epics/synApps_6_3/support/scaler-4-1//scalerApp/op/ui/autoconvert/scaler32_full.ui, macro: P=2idd:3820:,S=scaler1
+29-07-2026 12:23:27 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2ida2/2ida2App/op/ui/ 
+29-07-2026 12:23:27 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2ida2/iocBoot/ioc2ida2/softioc/../../../2ida2App/op/ui/2ida_hutch.ui
+29-07-2026 12:23:30 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_1/ioc/2idd/2iddApp/op/ui/ 
+29-07-2026 12:23:30 last file: /net/s2dserv/xorApps/epics/synApps_6_1/ioc/2idd/2iddApp/op/ui/2idd_beamline.ui
+29-07-2026 12:23:34 Info: could not find or download file /Users/fabriciomarin/Downloads/He_bottle.pngg, however continue
+29-07-2026 12:23:34 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 12:23:34 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/He_levels.ui, macro: He1=2idsft:userTran9.I,He2=2idsft:userTran9.J,He3=2idsft:userTran9.K,He4=2idsft:userTran9.L,Flo=2idsft:userTran9.O,Auto=2idsft:userTran3Enable,Ena=2idsft:userCalc3Enable,Opn=2idsft:userCalc3.VAL,Sns=2idsft:userTran9.M
+29-07-2026 12:24:09 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 12:24:09 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/scan_full.ui, macro: P=2idd:,N=H,S=scanH
+29-07-2026 12:24:11 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 12:24:11 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/scan_full.ui, macro: P=2idd:,N=1,S=scan1
+29-07-2026 12:24:12 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 12:24:12 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/scan_full.ui, macro: P=2idd:,N=2,S=scan2
+29-07-2026 12:24:18 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 12:24:18 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/scan_full.ui, macro: P=2idd:F,N=1,S=scan1
+29-07-2026 12:24:19 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 12:24:19 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/scan_full.ui, macro: P=2idd:F,N=H,S=scanH
+29-07-2026 12:27:38 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 12:27:38 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/scan_saveData.ui, macro: P=2idd:
+29-07-2026 12:27:46 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_1/ioc/2idsectorApp/sectorApp/op/ui/ 
+29-07-2026 12:27:46 last file: /net/s2dserv/xorApps/epics/synApps_6_1/ioc/2idsectorApp/sectorApp/op/ui/batchscan_v5.ui, macro: P=2idd:,B=1
+29-07-2026 12:28:14 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_1/ioc/2idsectorApp/sectorApp/op/ui/ 
+29-07-2026 12:28:14 last file: /net/s2dserv/xorApps/epics/synApps_6_1/ioc/2idsectorApp/sectorApp/op/ui/FlyScanSetup_v2.ui, macro: P=2idd:
+29-07-2026 12:28:21 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/autosave-R5-11/asApp/op/ui/autoconvert/ 
+29-07-2026 12:28:21 last file: /APSshare/epics/synApps_6_3/support/autosave-R5-11//asApp/op/ui/autoconvert/configMenu.ui, macro: P=2idd:,CONFIG=scan
+29-07-2026 12:28:35 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/mca-R7-10/mcaApp/op/ui/autoconvert/ 
+29-07-2026 12:28:35 last file: /APSshare/epics/synApps_6_3/support/mca-R7-10//mcaApp/op/ui/autoconvert/SIS38XX.ui, macro: P=2idd:3820:
+29-07-2026 12:28:42 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/mca-R7-10/mcaApp/op/ui/autoconvert/ 
+29-07-2026 12:28:42 last file: /APSshare/epics/synApps_6_3/support/mca-R7-10//mcaApp/op/ui/autoconvert/simple_mca.ui, macro: P=2iddXMAP:,M=mca1
+29-07-2026 12:28:50 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_1/ioc/2idd/2iddApp/op/ui/ 
+29-07-2026 12:28:50 last file: /net/s2dserv/xorApps/epics/synApps_6_1/ioc/2idd/2iddApp/op/ui/Detector_Elements.ui, macro: P=2iddXMAP:,D=XMAP
+29-07-2026 12:28:54 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/dxp-R6-1/dxpApp/op/ui/autoconvert/ 
+29-07-2026 12:28:54 last file: /APSshare/epics/synApps_6_3/support/dxp-R6-1//dxpApp/op/ui/autoconvert/4element_dxp.ui, macro: P=2iddXMAP:,D=dxp,M=mca
+29-07-2026 12:29:18 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/dxp-R6-1/dxpApp/op/ui/autoconvert/ 
+29-07-2026 12:29:18 last file: /APSshare/epics/synApps_6_3/support/dxp-R6-1//dxpApp/op/ui/autoconvert/mappingControl.ui, macro: P=2iddXMAP:
+29-07-2026 12:36:06 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2iddfS1/2iddfS1App/op/ui/ 
+29-07-2026 12:36:06 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2iddfS1/2iddfS1App/op/ui/2iddfS1.ui
+29-07-2026 12:36:17 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 12:36:17 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/userCalcs20.ui, macro: P=2iddfS1:,N1=1,N2=2,N3=3,N4=4,N5=5,N6=6,N7=7,N8=8,N9=9,N10=10,N11=11,N12=12,N13=13,N14=14,N15=15,N16=16,N17=17,N18=18,N19=19,N20=20
+29-07-2026 12:36:51 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 12:36:51 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userCalc.ui, macro: P=2iddfS1:,N=11,C=userCalc11
+29-07-2026 12:37:09 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 12:37:09 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/userStringCalcs20.ui, macro: P=2iddfS1:,N1=1,N2=2,N3=3,N4=4,N5=5,N6=6,N7=7,N8=8,N9=9,N10=10,N11=11,N12=12,N13=13,N14=14,N15=15,N16=16,N17=17,N18=18,N19=19,N20=20
+29-07-2026 12:37:15 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 12:37:15 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/userTransforms20.ui, macro: P=2iddfS1:,N1=1,N2=2,N3=3,N4=4,N5=5,N6=6,N7=7,N8=8,N9=9,N10=10,N11=11,N12=12,N13=13,N14=14,N15=15,N16=16,N17=17,N18=18,N19=19,N20=20
+29-07-2026 12:37:33 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 12:37:33 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userTransform_full.ui, macro: P=2iddfS1:,N=15,T=userTran15
+29-07-2026 15:10:46 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 15:10:46 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userTransform_full.ui, macro: P=2iddfS1:,N=4,T=userTran4
+29-07-2026 15:11:42 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 15:11:42 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userTransform.ui, macro: P=2iddfS1:,N=5,T=userTran5
+29-07-2026 15:11:44 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 15:11:45 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userTransform_full.ui, macro: P=2iddfS1:,T=userTran5,N=5
+29-07-2026 15:32:24 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_1/ioc/2idsectorApp/sectorApp/op/ui/ 
+29-07-2026 15:32:24 last file: /net/s2dserv/xorApps/epics/synApps_6_1/ioc/2idsectorApp/sectorApp/op/ui/FlyScanSetup_v2.ui, macro: P=2idd:
+29-07-2026 15:32:29 echo -n 2idd:Flyscans:Setup:DwellTime.VAL| xclip -i -sel clip
+29-07-2026 15:34:08 echo -n 2idd:scan1.CPT| xclip -i -sel clip
+29-07-2026 15:36:28 echo -n 2idd:scan1.EXSC| xclip -i -sel clip
+29-07-2026 15:36:59 echo -n 2idd:scan1.EXSC| xclip -i -sel clip
+29-07-2026 15:40:04 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 15:40:04 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/userStringCalcs20.ui, macro: P=2iddfS1:,N1=1,N2=2,N3=3,N4=4,N5=5,N6=6,N7=7,N8=8,N9=9,N10=10,N11=11,N12=12,N13=13,N14=14,N15=15,N16=16,N17=17,N18=18,N19=19,N20=20
+29-07-2026 15:40:23 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 15:40:23 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userStringCalc.ui, macro: P=2iddfS1:,N=14,C=userStringCalc14
+29-07-2026 15:40:24 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 15:40:24 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userStringCalc.ui, macro: P=2iddfS1:,N=15,C=userStringCalc15
+29-07-2026 15:41:03 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 15:41:03 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userStringCalc.ui, macro: P=2iddfS1:,N=7,C=userStringCalc7
+29-07-2026 15:41:16 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 15:41:16 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userStringCalc.ui, macro: P=2iddfS1:,N=11,C=userStringCalc11
+29-07-2026 15:42:00 echo -n 2idd:saveData_fileSystem| xclip -i -sel clip
+29-07-2026 15:42:32 echo -n 2idd:saveData_fileName| xclip -i -sel clip
+29-07-2026 15:42:43 echo -n 2idd:saveData_fullPathName| xclip -i -sel clip
+29-07-2026 15:42:54 echo -n 2idd:saveData_fileName| xclip -i -sel clip
+29-07-2026 15:43:23 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 15:43:23 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/calcExamples.ui
+29-07-2026 15:43:29 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 15:43:29 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/calcStringExamples.ui
+29-07-2026 15:48:17 echo -n 2iddfS1:userStringCalc14.PROC| xclip -i -sel clip
+29-07-2026 15:51:43 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 15:51:43 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/userCalcs20.ui, macro: P=2iddfS1:,N1=1,N2=2,N3=3,N4=4,N5=5,N6=6,N7=7,N8=8,N9=9,N10=10,N11=11,N12=12,N13=13,N14=14,N15=15,N16=16,N17=17,N18=18,N19=19,N20=20
+29-07-2026 15:52:01 echo -n 2iddfS1:userTran15.PROC| xclip -i -sel clip
+29-07-2026 15:55:32 echo -n 2idd:scan1.R1CV| xclip -i -sel clip
+29-07-2026 15:55:52 echo -n 2idd:scanH.EXSC| xclip -i -sel clip
+29-07-2026 15:59:19 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 15:59:19 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userStringSeqs20.ui, macro: P=2iddfS1:,N1=1,N2=2,N3=3,N4=4,N5=5,N6=6,N7=7,N8=8,N9=9,N10=10,N11=11,N12=12,N13=13,N14=14,N15=15,N16=16,N17=17,N18=18,N19=19,N20=20
+29-07-2026 15:59:30 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 15:59:30 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/userStringCalcs20.ui, macro: P=2iddfS1:,N1=1,N2=2,N3=3,N4=4,N5=5,N6=6,N7=7,N8=8,N9=9,N10=10,N11=11,N12=12,N13=13,N14=14,N15=15,N16=16,N17=17,N18=18,N19=19,N20=20
+29-07-2026 15:59:33 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 15:59:33 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userStringCalc.ui, macro: P=2iddfS1:,N=15,C=userStringCalc15
+29-07-2026 15:59:35 echo -n 2iddfS1:userStringCalc15.PROC| xclip -i -sel clip
+29-07-2026 16:16:55 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 16:16:55 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userStringCalc.ui, macro: P=2iddfS1:,N=14,C=userStringCalc14
+29-07-2026 16:19:48 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 16:19:48 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/userCalcs20.ui, macro: P=2iddfS1:,N1=1,N2=2,N3=3,N4=4,N5=5,N6=6,N7=7,N8=8,N9=9,N10=10,N11=11,N12=12,N13=13,N14=14,N15=15,N16=16,N17=17,N18=18,N19=19,N20=20
+29-07-2026 16:19:54 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 16:19:54 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userStringSeqs20.ui, macro: P=2iddfS1:,N1=1,N2=2,N3=3,N4=4,N5=5,N6=6,N7=7,N8=8,N9=9,N10=10,N11=11,N12=12,N13=13,N14=14,N15=15,N16=16,N17=17,N18=18,N19=19,N20=20
+29-07-2026 16:20:11 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 16:20:11 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userStringSeq.ui, macro: P=2iddfS1:,N=7,S=userStringSeq7
+29-07-2026 16:23:20 echo -n 2iddfS1:userStringSeq7.PROC| xclip -i -sel clip
+29-07-2026 16:26:50 echo -n 2idd:FscanH.EXSC| xclip -i -sel clip
+29-07-2026 16:27:36 echo -n 2idd:Fscan1.CPT| xclip -i -sel clip
+29-07-2026 16:29:54 echo -n 2idd:Fscan1.CPT| xclip -i -sel clip
+29-07-2026 16:31:00 echo -n 2idd:scan1.NPTS| xclip -i -sel clip
+29-07-2026 16:42:44 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 16:42:44 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/userTransforms20.ui, macro: P=2iddfS1:,N1=1,N2=2,N3=3,N4=4,N5=5,N6=6,N7=7,N8=8,N9=9,N10=10,N11=11,N12=12,N13=13,N14=14,N15=15,N16=16,N17=17,N18=18,N19=19,N20=20
+29-07-2026 16:42:46 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 16:42:46 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userTransform_full.ui, macro: P=2iddfS1:,N=15,T=userTran15
+29-07-2026 17:02:46 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 17:02:46 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/userCalcs20.ui, macro: P=2iddfS1:,N1=1,N2=2,N3=3,N4=4,N5=5,N6=6,N7=7,N8=8,N9=9,N10=10,N11=11,N12=12,N13=13,N14=14,N15=15,N16=16,N17=17,N18=18,N19=19,N20=20
+29-07-2026 17:03:14 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 17:03:14 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userCalc.ui, macro: P=2iddfS1:,N=3,C=userCalc3
+29-07-2026 17:03:28 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+29-07-2026 17:03:28 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/userTransforms20.ui, macro: P=2iddfS1:,N1=1,N2=2,N3=3,N4=4,N5=5,N6=6,N7=7,N8=8,N9=9,N10=10,N11=11,N12=12,N13=13,N14=14,N15=15,N16=16,N17=17,N18=18,N19=19,N20=20
+29-07-2026 17:03:31 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/calc-R3-7-5/calcApp/op/ui/autoconvert/ 
+29-07-2026 17:03:31 last file: /APSshare/epics/synApps_6_3/support/calc-R3-7-5//calcApp/op/ui/autoconvert/userTransform_full.ui, macro: P=2iddfS1:,N=10,T=userTran10
+04-08-2026 12:03:19 Channel Access Exception sec2idd.xray.aps.anl.gov:5064 on ? (op=5 data_type=DBR_invalid count=0) 
+05-08-2026 14:45:03 echo -n 2iddXMAP:PresetReal| xclip -i -sel clip
+05-08-2026 14:45:56 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+05-08-2026 14:45:56 unresolved macros present, press context in display to obtain a list
+05-08-2026 14:45:56 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/topMotors.ui, macro: P=2idd:,M1=m1,M2=m2,M3=m3,M4=m4,M5=m5,M6=m6,M7=m7,M8=m8,M9=m9,M10=m10,M11=m11,M12=m12,M13=m13,M14=m14,M15=m15,M16=m16,M17=m17,M18=m18,M19=m19,M20=m20,M21=m21,M22=m22,M23=m23,M24=m24,M25=m25,M26=m26,M27=m27,M28=m28,M29=m29,M30=m30,M31=m31,M32=m32,M33=m33,M34=m34,M35=m35,M36=m36,M37=m37,M38=m38,M39=m39,M40=m40,M41=m41,M42=m42,M43=m43,M44=m44,M45=m45,M46=m46,M47=m47,M48=m48
+06-08-2026 10:33:12 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/scaler-4-1/scalerApp/op/ui/autoconvert/ 
+06-08-2026 10:33:12 last file: /APSshare/epics/synApps_6_3/support/scaler-4-1//scalerApp/op/ui/autoconvert/scaler16_full.ui, macro: P=2idd:,S=scaler1
+06-08-2026 10:34:27 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2ida2/2ida2App/op/ui/ 
+06-08-2026 10:34:27 unresolved macros present, press context in display to obtain a list
+06-08-2026 10:34:27 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2ida2/iocBoot/ioc2ida2/softioc/../../../2ida2App/op/ui/kohzuGraphic.ui, macro: P=2ida2:,mTH=m17,mY2=m20,mZ2=m10,mCHI2=m19,mTH2=m18,mX=m0,mY=m0,mX2=m0,QE=BraggE,PVE=BraggEAO,QL=BraggLambda,PVL=BraggLambdaAO,QTh=BraggTheta,PVTh=BraggThetaAO
+06-08-2026 10:34:31 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2ida2/2ida2App/op/ui/ 
+06-08-2026 10:34:31 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2ida2/iocBoot/ioc2ida2/softioc/../../../2ida2App/op/ui/kohzuSeqCtl_All.ui, macro: P=2ida2:,M1=m9,M2=m10,M3=m11,M4=m12,M5=m17,M6=m18,M7=m19,M8=m20
+06-08-2026 10:35:09 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/ 
+06-08-2026 10:35:09 unresolved macros present, press context in display to obtain a list
+06-08-2026 10:35:09 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idsft/2idsftApp/op/ui/NDFileNetCDF.ui, macro: P=2iddXMAP:, R=netCDF1:
+
+29-07-2026 15:04:24 Controlsystem plugins: attempt to load from /net/s2dserv/APSshare/caqtdm/caqtdm-4.4.1/caQtDM_Binaries/rhel9-x86_64/controlsystems
+29-07-2026 15:04:24 Epics3Plugin: epics version: EPICS 7.0.4.1
+29-07-2026 15:04:24 caQtDM will suspend epics connections for data in invisible tabs while CAQTDM_OPTIMIZE_EPICS3CONNECTIONS not set to TRUE 
+29-07-2026 15:04:24 Epics4Plugin: epics version: EPICS 7.0.4.1
+29-07-2026 15:04:24 Info: plugin archiveSF loaded
+29-07-2026 15:04:24 Info: plugin demo loaded
+29-07-2026 15:04:24 Info: plugin environment loaded
+29-07-2026 15:04:24 Info: plugin epics3 loaded
+29-07-2026 15:04:24 Info: plugin epics4 loaded
+29-07-2026 15:04:24 environment variable CAQTDM_TIMEOUT_HOURS could be set for quitting caQtDM automatically after some time
+29-07-2026 15:04:26 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ADAravis/aravisApp/op/ui/autoconvert/ 
+29-07-2026 15:04:26 last file: /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ADAravis/aravisApp/op/ui/autoconvert/ADAravis.ui, macro: P=2idAV6:, R=cam1:, C=FLIR_ORX_10G_51S5M
+29-07-2026 15:06:33 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idAravis/op/ui/ 
+29-07-2026 15:06:33 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idAravis/op/ui/commonPlugins.ui, macro: P=2idAV6:
+29-07-2026 15:06:41 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ffmpegServer/ffmpegServerApp/op/ui/autoconvert/ 
+29-07-2026 15:06:41 last file: /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ffmpegServer/ffmpegServerApp/op/ui/autoconvert/ffmpegFile.ui, macro: P=2idAV6:,R=ffmfile1:
+29-07-2026 15:07:26 special macro CAQTDM_INTERNAL_UIPATH set to /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idAravis/op/ui/ 
+29-07-2026 15:07:26 last file: /net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idAravis/op/ui/commonPlugins.ui, macro: P=2idAV6:
+29-07-2026 15:07:28 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ADCore/ADApp/op/ui/autoconvert/ 
+29-07-2026 15:07:28 last file: /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ADCore/ADApp/op/ui/autoconvert/NDFileHDF5.ui, macro: P=2idAV6:,R=HDF1:,EXT=h5
+29-07-2026 17:09:08 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ADAravis/aravisApp/op/ui/autoconvert/ 
+29-07-2026 17:09:08 last file: /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ADAravis/aravisApp/op/ui/autoconvert/ADAravis.ui, macro: P=2idAV6:, R=cam1:, C=FLIR_ORX_10G_51S5M
+29-07-2026 17:09:11 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ADCore/ADApp/op/ui/autoconvert/ 
+29-07-2026 17:09:11 last file: /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ADCore/ADApp/op/ui/autoconvert/NDFileHDF5.ui, macro: P=2idAV6:,R=HDF1:,EXT=h5
+02-08-2026 10:56:35 Channel Access Exception sec2idd.xray.aps.anl.gov:38137 on ? (op=5 data_type=DBR_invalid count=0) 
+02-08-2026 11:00:37 Channel Access Exception sec2idd.xray.aps.anl.gov:34313 on ? (op=5 data_type=DBR_invalid count=0) 
+04-08-2026 11:13:16 Channel Access Exception sec2idd.xray.aps.anl.gov:34415 on ? (op=5 data_type=DBR_invalid count=0) 
+04-08-2026 12:24:47 Channel Access Exception sec2idd.xray.aps.anl.gov:43729 on ? (op=5 data_type=DBR_invalid count=0) 
+04-08-2026 12:26:03 Channel Access Exception sec2idd.xray.aps.anl.gov:43729 on ? (op=5 data_type=DBR_invalid count=0) 
+04-08-2026 12:34:09 Channel Access Exception sec2idd.xray.aps.anl.gov:43729 on ? (op=5 data_type=DBR_invalid count=0) 
+04-08-2026 15:38:54 Channel Access Exception sec2idd.xray.aps.anl.gov:43729 on ? (op=5 data_type=DBR_invalid count=0) 
+05-08-2026 14:10:03 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ADAravis/aravisApp/op/ui/autoconvert/ 
+05-08-2026 14:10:03 last file: /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ADAravis/aravisApp/op/ui/autoconvert/ADAravis.ui, macro: P=2idAV6:, R=cam1:, C=FLIR_ORX_10G_51S5M
+05-08-2026 14:10:22 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ADGenICam/GenICamApp/op/ui/autoconvert/ 
+05-08-2026 14:10:22 last file: /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ADGenICam/GenICamApp/op/ui/autoconvert/FLIR_ORX_10G_51S5M-features_1.ui, macro: P=2idAV6:,R=cam1:
+05-08-2026 14:10:38 special macro CAQTDM_INTERNAL_UIPATH set to /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ADGenICam/GenICamApp/op/ui/autoconvert/ 
+05-08-2026 14:10:38 last file: /APSshare/epics/synApps_6_3/support/areaDetector-R3-14/ADGenICam/GenICamApp/op/ui/autoconvert/FLIR_ORX_10G_51S5M-features_2.ui, macro: P=2idAV6:,R=cam1:
+05-08-2026 14:11:02 Channel Access Exception sec2idd.xray.aps.anl.gov:33581 on ? (op=5 data_type=DBR_invalid count=0) 
+12-08-2026 12:44:53 Channel Access Exception sec2idd.xray.aps.anl.gov:36491 on ? (op=5 data_type=DBR_invalid count=0) 
+12-08-2026 14:52:40 Channel Access Exception sec2idd.xray.aps.anl.gov:42097 on ? (op=5 data_type=DBR_invalid count=0) 
+12-08-2026 15:01:06 Channel Access Exception sec2idd.xray.aps.anl.gov:36095 on ? (op=5 data_type=DBR_invalid count=0) 
+12-08-2026 15:07:40 Channel Access Exception sec2idd.xray.aps.anl.gov:37817 on ? (op=5 data_type=DBR_invalid count=0) 
+12-08-2026 15:31:39 Channel Access Exception sec2idd.xray.aps.anl.gov:38897 on ? (op=5 data_type=DBR_invalid count=0) 
+12-08-2026 15:45:15 Channel Access Exception sec2idd.xray.aps.anl.gov:33083 on ? (op=5 data_type=DBR_invalid count=0) 
