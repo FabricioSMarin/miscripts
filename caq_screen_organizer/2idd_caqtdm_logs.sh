@@ -63,3 +63,7 @@ caQtDM -x -attach -dg +1500+82 -macro "P=2idAV6:,R=HDF1:,EXT=h5" NDFileHDF5.ui &
 sleep 3
 caQtDM -x -attach -dg +1508+579 -macro "P=2idAV6:, R=cam1:, C=FLIR_ORX_10G_51S5M" ADAravis.ui &
 sleep 3
+
+wmctrl -s 3
+caQtDM -x -attach -dg +1500+519 -macro "P=2idAV6:, R=cam1:, C=FLIR_ORX_10G_51S5M" ADAravis.ui &
+sleep 3
