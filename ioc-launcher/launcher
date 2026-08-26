@@ -1,0 +1,61 @@
+#############PROJECT RUNNING-START#############
+COEUS:
+	IOC:
+		2idbleps start
+		2idsft start
+		2idaCC start 		*needs IP update
+		diag1				*not in use
+		diag2				*not in use
+		2idbpm start
+
+2iddnx:
+	IOC:
+		2iddfS1 start
+		2iddtmm1 start 		*not sure if in use
+		2iddtmm2 start 		*not sure if in use
+		2iddVLM 
+	python:
+		scan_logger 		
+
+2idenx:
+	IOC:
+		2xfmfS1 start
+		2idetmm1 start 		*not in use
+		2idetmm2 start 		*not in use
+	python:
+		scan_logger
+
+cactus:
+	IOC:
+		bnpxspress3	start
+
+clover:
+	IOC:
+		bnpsft start
+
+8bmfd1 (8bmb):
+	IOC:
+		8bmbsft start
+		xspress3 start
+	python:
+		scan_logger
+
+
+****VME*** just needs to be powered on
+2idd
+2xfm
+2iddf
+2ida1
+2ida2
+9idbBNP
+9idbTAU
+
+
+mochi:
+	2xfmfS1				*not in use
+	2idMS1				*not in use
+	python:
+		IOC auto-launcher service
+		scan monitor launcher service
+
+##scan monitor for 2ide
