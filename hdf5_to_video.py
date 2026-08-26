@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import re
 import sys
 import time
 from pathlib import Path
@@ -26,7 +27,17 @@ import numpy as np
 
 LOG = logging.getLogger(__name__)
 
+_URI_SCHEME = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.-]*:")
+
 H5_EXTENSIONS = {".hdf5", ".h5", ".hdf"}
+
+
+def normalize_path(path: Path) -> Path:
+    """Expand ~ and resolve local paths; leave URI-style paths (e.g. smb:/) unchanged."""
+    expanded = path.expanduser()
+    if _URI_SCHEME.match(str(expanded)):
+        return expanded
+    return expanded.resolve()
 DATASET_CANDIDATES = (
     "entry/data/data",
     "entry/instrument/detector/data",
@@ -233,7 +244,8 @@ def watch_directory(
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "input_dir",
+        "-i",
+        "--input_dir",
         type=Path,
         help="directory to scan for HDF5 files",
     )
@@ -284,13 +296,13 @@ def main() -> int:
         format="%(levelname)s: %(message)s",
     )
 
-    input_dir = args.input_dir.expanduser().resolve()
+    input_dir = normalize_path(args.input_dir)
     if not input_dir.is_dir():
         LOG.error("input directory does not exist: %s", input_dir)
         return 1
 
     output_dir = (
-        args.output_dir.expanduser().resolve() if args.output_dir is not None else None
+        normalize_path(args.output_dir) if args.output_dir is not None else None
     )
 
     if args.watch:
