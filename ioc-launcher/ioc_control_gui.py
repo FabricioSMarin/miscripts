@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
-"""GUI to start/stop/restart/status IOCs listed in master-launcher.sh."""
+"""GUI to start/stop/restart/status IOCs listed in master-launcher.sh.
+
+SSH uses the *local* account's private key at ~/.ssh/ioc_launcher (expanded
+from $HOME). Remote user@host may belong to a different beamline account;
+that account's authorized_keys on the IOC host must include this key's .pub.
+
+To authorize another local GUI user: generate ~/.ssh/ioc_launcher for that
+user, then append the .pub to authorized_keys for every remote user@host
+listed in master-launcher.sh. See the header comments there.
+"""
 
 from __future__ import annotations
 
@@ -14,6 +23,7 @@ from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
 from tkinter import ttk
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 LAUNCHER_FILE = SCRIPT_DIR / "master-launcher.sh"
 DEFAULT_IDENTITY = os.path.expanduser("~/.ssh/ioc_launcher")
@@ -21,16 +31,18 @@ SSH_TIMEOUT_S = 30
 LOCAL_LAUNCH_WAIT_S = 2
 SSH_ACTIONS = ("start", "stop", "restart", "status")
 
+# Allow -i and repeated -o / other short options before user@host.
 SSH_RE = re.compile(
     r"""
     ssh\s+
-    (?:-i\s+(?P<identity>\S+)\s+)?
+    (?P<opts>(?:(?:-i\s+\S+|-o\s+\S+|-\w\s+\S+|-\w)\s+)*)
     (?P<user>[^\s@]+)@(?P<host>\S+)
     \s+
     ["'](?P<remote>.+?)["']
     """,
     re.VERBOSE | re.DOTALL,
 )
+IDENTITY_RE = re.compile(r"-i\s+(\S+)")
 
 
 @dataclass(frozen=True)
@@ -66,8 +78,8 @@ def parse_launcher(path: Path) -> list[IocEntry]:
     joined = re.sub(r"\\\s*\n\s*", " ", text)
     entries: list[IocEntry] = []
     for match in SSH_RE.finditer(joined):
-        identity = match.group("identity") or DEFAULT_IDENTITY
-        identity = os.path.expanduser(identity)
+        id_match = IDENTITY_RE.search(match.group("opts") or "")
+        identity = os.path.expanduser(id_match.group(1) if id_match else DEFAULT_IDENTITY)
         remote = " ".join(match.group("remote").split())
         entries.append(
             IocEntry(
@@ -78,6 +90,37 @@ def parse_launcher(path: Path) -> list[IocEntry]:
             )
         )
     return entries
+
+
+def remote_targets(entries: list[IocEntry]) -> list[str]:
+    """Unique remote user@host values (for authorize-more-users hints)."""
+    seen: OrderedDict[str, None] = OrderedDict()
+    for entry in entries:
+        seen.setdefault(f"{entry.user}@{entry.host}", None)
+    return list(seen)
+
+
+def identity_status_message(entries: list[IocEntry]) -> tuple[str, str]:
+    """Return (log_tag, message) describing local key readiness."""
+    identity = entries[0].identity if entries else DEFAULT_IDENTITY
+    targets = ", ".join(remote_targets(entries)) or "(none)"
+    if not os.path.isfile(identity):
+        return (
+            "err",
+            f"Missing local SSH key: {identity}. Generate one for this "
+            f"account, then authorize its .pub on: {targets}",
+        )
+    if not os.access(identity, os.R_OK):
+        return (
+            "err",
+            f"Cannot read SSH key: {identity} (Permission denied). "
+            f"Use this account's own ~/.ssh/ioc_launcher — not another user's. "
+            f"Authorize .pub on: {targets}",
+        )
+    return (
+        "meta",
+        f"SSH identity: {identity}. Remote targets needing this key's .pub: {targets}",
+    )
 
 
 def group_by_host(entries: list[IocEntry]) -> OrderedDict[str, list[IocEntry]]:
@@ -181,6 +224,8 @@ class IocControlApp(tk.Tk):
             f"Loaded {len(entries)} IOC(s) from {LAUNCHER_FILE.name}. "
             "start/stop/restart/status run over SSH; caqtdm runs locally.",
         )
+        tag, msg = identity_status_message(entries)
+        self._log(tag, msg)
 
     @staticmethod
     def _font_exists(name: str) -> bool:
@@ -261,6 +306,8 @@ class IocControlApp(tk.Tk):
             ioc.identity,
             "-o",
             "BatchMode=yes",
+            "-o",
+            "IdentitiesOnly=yes",
             "-o",
             "ConnectTimeout=10",
             f"{ioc.user}@{ioc.host}",
@@ -374,6 +421,8 @@ def main() -> None:
     if not LAUNCHER_FILE.is_file():
         raise SystemExit(f"Missing launcher file: {LAUNCHER_FILE}")
     entries = parse_launcher(LAUNCHER_FILE)
+    if not entries:
+        raise SystemExit(f"No ssh IOC entries parsed from {LAUNCHER_FILE}")
     app = IocControlApp(entries)
     app.mainloop()
 
