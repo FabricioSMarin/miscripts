@@ -47,7 +47,7 @@ ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
 # --- cactus ---
 ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
   userbnp@cactus-priv.xray.aps.anl.gov \
-  "/net/s2dserv/xorApps/epics/synApps_6_3/ioc/bnpxspress3/iocBoot/iocbnpxspress3/softioc/bnpxspress3.pl start"
+  "/net/s2dserv/xorApps/epics/synApps_6_3/ioc/2idxspress3/iocBoot/iocbnp_8ChXspress3/softioc/bnp_8ChXspress3.pl start"
 
 # --- clover ---
 ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
@@ -55,10 +55,10 @@ ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
   "/net/s2dserv/xorApps/epics/synApps_6_3/ioc/bnpsft/iocBoot/iocbnpsft/softioc/bnpsft.pl start"
 
 # --- 8bmfd1 ---
-ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
-  user8bmb@8bmfd1.xray.aps.anl.gov \
-  "/net/s2dserv/xorApps/epics/synApps_6_3/ioc/8bmbsft/iocBoot/ioc8bmbsft/softioc/8bmbsft.pl start"
+#ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
+#  user8bmb@8bmfd1.xray.aps.anl.gov \
+#  "/net/s2dserv/xorApps/epics/synApps_6_3/ioc/8bmbsft/iocBoot/ioc8bmbsft/softioc/8bmbsft.pl start"
 
-ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
-  user8bmb@8bmfd1.xray.aps.anl.gov \
-  "/net/s2dserv/xorApps/epics/synApps_6_3/ioc/xspress3/iocBoot/iocxspress3/softioc/xspress3.pl start"
+#ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
+#  user8bmb@8bmfd1.xray.aps.anl.gov \
+#  "/net/s2dserv/xorApps/epics/synApps_6_3/ioc/xspress3/iocBoot/iocxspress3/softioc/xspress3.pl start"
