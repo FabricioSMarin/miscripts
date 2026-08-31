@@ -28,7 +28,7 @@ ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
 
 ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
   user2idd@coeus.xray.aps.anl.gov \
-  "/net/s2dserv/xorApps/epics/synApps_6_3/2idBPM/iocBoot/iocbpm/softioc/2idBPM.sh start"
+  "/net/s2dserv/xorApps/epics/synApps_6_3/2idBPM/iocBoot/iocbpm/2idBPM.sh start"
 
 # --- 2iddnx ---
 ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
@@ -46,7 +46,7 @@ ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
 
 # --- cactus ---
 ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
-  userbnp@cactus.xray.aps.anl.gov \
+  userbnp@cactus-priv.xray.aps.anl.gov \
   "/net/s2dserv/xorApps/epics/synApps_6_3/ioc/bnpxspress3/iocBoot/iocbnpxspress3/softioc/bnpxspress3.pl start"
 
 # --- clover ---
