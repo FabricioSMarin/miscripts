@@ -42,7 +42,7 @@ ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
 # --- 2idenx ---
 ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
   user2ide@2idenx.xray.aps.anl.gov \
-  "/net/s2dserv/xorApps/epics/synApps_6_3/ioc/2xfmfS1/iocBoot/ioc2xfmfS1/softioc/2xfmfS1.pl start"
+  "/net/s2dserv/xorApps/epics/synApps_6_3/ioc/2xfmS1/iocBoot/ioc2xfmS1/softioc/2xfmS1.pl start"
 
 # --- cactus ---
 ssh -i ~/.ssh/ioc_launcher -o BatchMode=yes -o IdentitiesOnly=yes \
