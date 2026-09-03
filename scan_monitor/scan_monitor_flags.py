@@ -49,10 +49,10 @@ RED_FLAGS = frozenset(
     }
 )
 
-# System memory thresholds (% used).
-MEMORY_HIGH_PCT = 60.0
-MEMORY_CRITICAL_PCT = 90.0
-MEMORY_RESET_PCT = 50.0
+# System memory thresholds (% used). Edge-triggered markers; each latch
+# clears when usage drops back to or below its fire threshold.
+MEMORY_HIGH_PCT = 50.0
+MEMORY_CRITICAL_PCT = 75.0
 
 ContextDict = dict[str, Any]
 FlagLogic = Callable[[SimpleNamespace], bool]
@@ -400,13 +400,13 @@ def system_memory_percent() -> float | None:
 
 
 def memory_high(context: Optional[ContextDict] = None) -> bool:
-    """System memory above 60% (orange); resets when usage drops to 50%."""
+    """System memory above 50% (orange); fires once until usage drops to <=50%."""
     global _last_memory_percent, _memory_high_active
     usage = system_memory_percent()
     _last_memory_percent = usage
     if usage is None:
         return False
-    if usage <= MEMORY_RESET_PCT:
+    if usage <= MEMORY_HIGH_PCT:
         _memory_high_active = False
         return False
     if usage > MEMORY_HIGH_PCT and not _memory_high_active:
@@ -416,13 +416,13 @@ def memory_high(context: Optional[ContextDict] = None) -> bool:
 
 
 def memory_critical(context: Optional[ContextDict] = None) -> bool:
-    """System memory above 90% (red); resets when usage drops to 50%."""
+    """System memory above 75% (red); fires once until usage drops to <=75%."""
     global _last_memory_percent, _memory_critical_active
     usage = system_memory_percent()
     _last_memory_percent = usage
     if usage is None:
         return False
-    if usage <= MEMORY_RESET_PCT:
+    if usage <= MEMORY_CRITICAL_PCT:
         _memory_critical_active = False
         return False
     if usage > MEMORY_CRITICAL_PCT and not _memory_critical_active:

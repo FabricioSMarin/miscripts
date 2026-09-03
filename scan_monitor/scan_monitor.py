@@ -74,6 +74,8 @@ from matplotlib.widgets import CheckButtons
 from scan_monitor_flags import (
     FLAG_FUNCTIONS,
     FLAGS_NO_CONFIRM,
+    MEMORY_CRITICAL_PCT,
+    MEMORY_HIGH_PCT,
     begin_flag_poll,
     marker_color,
     system_memory_percent,
@@ -167,16 +169,22 @@ def scan_number_from_save_data_message(message: Any) -> str | None:
 
 
 def resolve_scan_number(parameters: dict[str, Any]) -> str:
-    """Resolve scan_number for scans.csv and flag events."""
-    from_message = scan_number_from_save_data_message(parameters.get("saveData_message"))
-    if from_message is not None:
-        return from_message
+    """Resolve scan_number for scans.csv, the timeline, and flag events.
+
+    Prefer ``next_scan_number`` (``saveData_scanNumber``) minus one: at scan
+    start that PV already holds the next index to write. ``saveData_message``
+    is only a fallback because it still names the *previous* file until the
+    current scan finishes writing.
+    """
     nxt = parameters.get("next_scan_number")
     if nxt is not None:
         try:
             return str(int(nxt) - 1)
         except (TypeError, ValueError):
             pass
+    from_message = scan_number_from_save_data_message(parameters.get("saveData_message"))
+    if from_message is not None:
+        return from_message
     return "?"
 
 
@@ -503,6 +511,34 @@ def draw_event_timeline(ax: Any, events: list[TimelineEvent], *, title: str) -> 
     ax.set_title(title, color="black")
     ax.tick_params(colors="black")
     ax.grid(True, axis="x", alpha=0.3)
+    _annotate_memory_usage(ax)
+
+
+def _annotate_memory_usage(ax: Any) -> None:
+    """Show current host memory use in the upper-right corner of the timeline."""
+    mem = system_memory_percent()
+    if mem is None:
+        text = "mem: —"
+        color = "gray"
+    else:
+        text = f"mem: {mem:.0f}%"
+        if mem > MEMORY_CRITICAL_PCT:
+            color = "red"
+        elif mem > MEMORY_HIGH_PCT:
+            color = "orange"
+        else:
+            color = "black"
+    ax.text(
+        0.99,
+        0.95,
+        text,
+        transform=ax.transAxes,
+        ha="right",
+        va="top",
+        fontsize=9,
+        color=color,
+        zorder=5,
+    )
 
 
 class ScanMonitor:
@@ -1035,6 +1071,9 @@ class ScanMonitor:
             while True:
                 self._process_pending_work()
                 self.evaluate_flags()
+                # Refresh so the corner memory-% text stays current.
+                if self.live_plot_enabled:
+                    self._plot_needs_update = True
                 self._process_pending_work()
                 time.sleep(self.flag_poll_s)
         except KeyboardInterrupt:
