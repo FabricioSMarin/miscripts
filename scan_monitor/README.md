@@ -30,6 +30,9 @@ python scan_monitor.py --plot-only
 
 # Headless logging (no interactive timeline window)
 python scan_monitor.py --no-live-plot
+
+# Check whether a monitor for this config/beamline is already running
+python scan_monitor.py -c scan_monitor_config_2idd.json --check
 ```
 
 ---

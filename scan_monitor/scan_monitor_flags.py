@@ -59,20 +59,51 @@ FlagLogic = Callable[[SimpleNamespace], bool]
 FlagFunction = Callable[[Optional[ContextDict]], bool]
 
 
+def _is_optional_flag_input(name: str) -> bool:
+    """Step-scan extras (``*_step*`` labels) must not disable fly-scan flags if unread."""
+    return "_step" in name
+
+
 def flag_check(fn: FlagLogic) -> FlagFunction:
     """Wrap a flag body that takes a namespace of input PV values.
 
     The monitor passes whatever ``inputs`` labels are in the JSON for that flag.
-    Returns False when context is missing or any value is None (unread PV).
+    Returns False when context is missing or any required value is None (unread PV).
+    Labels containing ``_step`` are optional so fly-scan flags still run if a
+    step-scan PV is disconnected.
     """
 
     @wraps(fn)
     def wrapper(context: Optional[ContextDict] = None) -> bool:
-        if not context or any(v is None for v in context.values()):
+        if not context:
+            return False
+        required = {k: v for k, v in context.items() if not _is_optional_flag_input(k)}
+        if any(v is None for v in required.values()):
             return False
         return fn(SimpleNamespace(**context))
 
     return wrapper
+
+
+def _any_int_match(
+    ctx: SimpleNamespace,
+    prefix: str,
+    *,
+    equals: int | None = None,
+    nonzero: bool = False,
+) -> bool:
+    for name, value in vars(ctx).items():
+        if not name.startswith(prefix) or value is None:
+            continue
+        try:
+            iv = int(value)
+        except (TypeError, ValueError):
+            continue
+        if equals is not None and iv == equals:
+            return True
+        if nonzero and iv != 0:
+            return True
+    return False
 
 
 def _struck_done(ctx: SimpleNamespace) -> bool:
@@ -233,13 +264,17 @@ def ioc_is_down(context: Optional[ContextDict] = None) -> bool:
 
 @flag_check
 def scan_aborted(ctx: SimpleNamespace) -> bool:
-    """Scan record status message reports an abort."""
-    return "Abort," in _as_text(ctx.message_outer) or "Abort," in _as_text(ctx.message_inner)
+    """Scan record status message reports an abort (fly and/or step records)."""
+    return any(
+        "Abort," in _as_text(value)
+        for name, value in vars(ctx).items()
+        if name.startswith("message_") and value is not None
+    )
 
 
 _pause_state_initialized = False
 _last_pause_state = False
-_pause_edges_for_tick: tuple[tuple[int, int, int, int], bool, bool] | None = None
+_pause_edges_for_tick: tuple[tuple[Any, ...], bool, bool] | None = None
 
 
 def begin_flag_poll() -> None:
@@ -249,22 +284,32 @@ def begin_flag_poll() -> None:
 
 
 def _in_pause_state(ctx: SimpleNamespace) -> bool:
-    return (
-        int(ctx.is_paused) == 1
-        or int(ctx.is_wait_inner) != 0
-        or int(ctx.is_wait_outer) != 0
+    return _any_int_match(ctx, "is_paused", equals=1) or _any_int_match(
+        ctx, "is_wait", nonzero=True
     )
+
+
+def _scan_is_busy(ctx: SimpleNamespace) -> bool:
+    return _any_int_match(ctx, "scan_busy", equals=1)
+
+
+def _pause_identity(ctx: SimpleNamespace) -> tuple[Any, ...]:
+    keys: list[Any] = []
+    for name in sorted(vars(ctx)):
+        if not name.startswith(("is_paused", "is_wait", "scan_busy")):
+            continue
+        value = getattr(ctx, name)
+        try:
+            keys.append(int(value) if value is not None else None)
+        except (TypeError, ValueError):
+            keys.append(None)
+    return tuple(keys)
 
 
 def _pause_edges(ctx: SimpleNamespace) -> tuple[bool, bool]:
     """Return (paused_edge, unpaused_edge) once per poll tick."""
     global _pause_state_initialized, _last_pause_state, _pause_edges_for_tick
-    tick = (
-        int(ctx.is_paused),
-        int(ctx.is_wait_inner),
-        int(ctx.is_wait_outer),
-        int(ctx.scan_busy),
-    )
+    tick = _pause_identity(ctx)
     if _pause_edges_for_tick is not None and _pause_edges_for_tick[0] == tick:
         return _pause_edges_for_tick[1], _pause_edges_for_tick[2]
 
@@ -275,7 +320,7 @@ def _pause_edges(ctx: SimpleNamespace) -> tuple[bool, bool]:
         paused_edge, unpaused_edge = False, False
     else:
         paused_edge = in_pause and not _last_pause_state
-        unpaused_edge = _last_pause_state and not in_pause and int(ctx.scan_busy) == 1
+        unpaused_edge = _last_pause_state and not in_pause and _scan_is_busy(ctx)
         _last_pause_state = in_pause
 
     _pause_edges_for_tick = (tick, paused_edge, unpaused_edge)
@@ -284,13 +329,13 @@ def _pause_edges(ctx: SimpleNamespace) -> tuple[bool, bool]:
 
 @flag_check
 def scan_paused(ctx: SimpleNamespace) -> bool:
-    """Scan entered a paused/wait state (edge-triggered)."""
+    """Scan entered a paused/wait state (edge-triggered; fly and/or step)."""
     return _pause_edges(ctx)[0]
 
 
 @flag_check
 def scan_unpaused(ctx: SimpleNamespace) -> bool:
-    """Scan resumed after pause/wait while still busy (edge-triggered)."""
+    """Scan resumed after pause/wait while still busy (edge-triggered; fly and/or step)."""
     return _pause_edges(ctx)[1]
 
 

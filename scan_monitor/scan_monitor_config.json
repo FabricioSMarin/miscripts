@@ -15,7 +15,19 @@
       "pv": "8bmbsft:Fscan1.BUSY",
       "when": "eq",
       "value": 1,
-      "comment": "Execute-scan goes active at the start of a 2D scan when value changes from 0 to 1"
+      "comment": "Fly-scan outer loop (Fscan1) goes busy 0->1 at the start of a 2D fly scan"
+    },
+    {
+      "pv": "8bmbsft:scan2.BUSY",
+      "when": "eq",
+      "value": 1,
+      "comment": "Step-scan outer loop (scan2) goes busy 0->1 at the start of a 2D step scan"
+    },
+    {
+      "pv": "8bmbsft:scan1.BUSY",
+      "when": "eq",
+      "value": 1,
+      "comment": "Step-scan inner/1D loop (scan1). Nested 2D inner-line edges are ignored when scan2 is already busy"
     }
   ],
 
@@ -34,7 +46,19 @@
     {"label": "Yend", "pv": "8bmbsft:Fscan1.P1EP"},
     {"label": "Ystep", "pv": "8bmbsft:Fscan1.P1SI"},
     {"label": "Ywidth", "pv": "8bmbsft:Fscan1.P1WD"},
-    {"label": "Ycenter", "pv": "8bmbsft:Fscan1.P1CP"}
+    {"label": "Ycenter", "pv": "8bmbsft:Fscan1.P1CP"},
+    {"label": "step_Xnpts", "pv": "8bmbsft:scan1.NPTS", "optional": true, "comment": "Step-scan inner (X) = scan1; outer (Y) = scan2"},
+    {"label": "step_Ynpts", "pv": "8bmbsft:scan2.NPTS", "optional": true},
+    {"label": "step_Xstart", "pv": "8bmbsft:scan1.P1SP", "optional": true},
+    {"label": "step_Xend", "pv": "8bmbsft:scan1.P1EP", "optional": true},
+    {"label": "step_Xstep", "pv": "8bmbsft:scan1.P1SI", "optional": true},
+    {"label": "step_Xwidth", "pv": "8bmbsft:scan1.P1WD", "optional": true},
+    {"label": "step_Xcenter", "pv": "8bmbsft:scan1.P1CP", "optional": true},
+    {"label": "step_Ystart", "pv": "8bmbsft:scan2.P1SP", "optional": true},
+    {"label": "step_Yend", "pv": "8bmbsft:scan2.P1EP", "optional": true},
+    {"label": "step_Ystep", "pv": "8bmbsft:scan2.P1SI", "optional": true},
+    {"label": "step_Ywidth", "pv": "8bmbsft:scan2.P1WD", "optional": true},
+    {"label": "step_Ycenter", "pv": "8bmbsft:scan2.P1CP", "optional": true}
   ],
 
   "flags": {
@@ -47,30 +71,42 @@
     },
 
   "scan_paused": {
-    "comment": "Scan pause record went active.",
+    "comment": "Fly or step scan pause/wait went active. Labels containing _step are optional extras ORed with the fly PVs.",
     "inputs": [
       {"label": "is_paused", "pv": "8bmbsft:FscanPause.VAL"},
+      {"label": "is_paused_step", "pv": "8bmbsft:scanPause.VAL", "optional": true},
       {"label": "is_wait_inner", "pv": "8bmbsft:FscanH.WCNT"},
       {"label": "is_wait_outer", "pv": "8bmbsft:Fscan1.WCNT"},
-      {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"}
+      {"label": "is_wait_inner_step", "pv": "8bmbsft:scan1.WCNT", "optional": true},
+      {"label": "is_wait_outer_step", "pv": "8bmbsft:scan2.WCNT", "optional": true},
+      {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
+      {"label": "scan_busy_step_inner", "pv": "8bmbsft:scan1.BUSY", "optional": true},
+      {"label": "scan_busy_step_outer", "pv": "8bmbsft:scan2.BUSY", "optional": true}
     ]
   },
 
   "scan_unpaused": {
-    "comment": "Scan pause record went inactive.",
+    "comment": "Fly or step scan pause/wait went inactive while a scan is still busy.",
     "inputs": [
       {"label": "is_paused", "pv": "8bmbsft:FscanPause.VAL"},
+      {"label": "is_paused_step", "pv": "8bmbsft:scanPause.VAL", "optional": true},
       {"label": "is_wait_inner", "pv": "8bmbsft:FscanH.WCNT"},
       {"label": "is_wait_outer", "pv": "8bmbsft:Fscan1.WCNT"},
-      {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"}
+      {"label": "is_wait_inner_step", "pv": "8bmbsft:scan1.WCNT", "optional": true},
+      {"label": "is_wait_outer_step", "pv": "8bmbsft:scan2.WCNT", "optional": true},
+      {"label": "scan_busy", "pv": "8bmbsft:Fscan1.BUSY"},
+      {"label": "scan_busy_step_inner", "pv": "8bmbsft:scan1.BUSY", "optional": true},
+      {"label": "scan_busy_step_outer", "pv": "8bmbsft:scan2.BUSY", "optional": true}
     ]
   },
 
   "scan_aborted": {
-    "comment": "Scan was aborted.",
+    "comment": "Fly or step scan status message reports Abort.",
     "inputs": [
       {"label": "message_outer", "pv": "8bmbsft:Fscan1.SMSG", "as": "string"},
-      {"label": "message_inner", "pv": "8bmbsft:FscanH.SMSG", "as": "string"}
+      {"label": "message_inner", "pv": "8bmbsft:FscanH.SMSG", "as": "string"},
+      {"label": "message_outer_step", "pv": "8bmbsft:scan2.SMSG", "as": "string", "optional": true},
+      {"label": "message_inner_step", "pv": "8bmbsft:scan1.SMSG", "as": "string", "optional": true}
     ]
   },
 

@@ -3,8 +3,11 @@
 Monitor EPICS scan orchestration and log PV snapshots for each 2D scan.
 
 Reads PV definitions from a JSON config with these sections:
-  - scan_started: PVs whose state change marks the start of a 2D scan
-  - scan_parameters: PVs logged once per scan at scan start
+  - scan_started: PVs whose 0->1 (or configured) edge marks scan start; any
+    match starts a scan, and inner-loop edges are ignored while another
+    start PV is already busy
+  - scan_parameters: PVs logged once per scan at scan start (entries may set
+    ``optional`` so a missing PV does not abort the snapshot)
   - flags: per-flag input PVs; read each poll and passed as the context
     dict to the matching function in scan_monitor_flags.py, which applies
     the multi-PV calculation and returns True on a fault
@@ -24,23 +27,33 @@ The saved PNG always includes all events, including those loaded from prior runs
 
 ``--plot-only`` runs the monitor purely as a live viewer: PVs are polled and flags
 evaluated as usual, but nothing is written to disk (no log file, CSV, JSONL, or PNGs).
+
+Only one live monitor is allowed per beamline (keyed by ``scan_number_pv``). A second
+start exits immediately; ``--check`` reports whether an instance is already running.
 """
 
 from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import logging
 import os
 import re
 import sys
+import tempfile
 import threading
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, TextIO
+
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - Windows
+    fcntl = None  # type: ignore[assignment]
 
 import matplotlib
 
@@ -67,6 +80,7 @@ from scan_monitor_flags import (
 )
 
 epics: Any = None
+_INSTANCE_LOCK_FH: TextIO | None = None
 
 
 @dataclass
@@ -260,8 +274,87 @@ def read_labeled_pvs(entries: list[dict[str, Any]]) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for entry in entries:
         label = entry.get("label") or entry["pv"]
-        out[label] = pv_value(entry["pv"], as_string=entry.get("as") == "string")
+        try:
+            out[label] = pv_value(entry["pv"], as_string=entry.get("as") == "string")
+        except RuntimeError:
+            if entry.get("optional"):
+                out[label] = None
+                continue
+            raise
     return out
+
+
+def instance_lock_path(config: dict[str, Any], config_path: Path) -> Path:
+    """Return the lock-file path for one monitor instance.
+
+    Keyed by ``scan_number_pv`` when present so configs for the same beamline
+    (e.g. ``scan_monitor_config.json`` and ``scan_monitor_config_8bmb.json``)
+    share one lock; otherwise by the resolved config path.
+    """
+    key_source = str(config.get("scan_number_pv") or config_path.resolve())
+    digest = hashlib.sha1(key_source.encode()).hexdigest()[:12]
+    stem = re.sub(r"[^\w.-]+", "_", str(config.get("scan_number_pv") or config_path.stem))
+    return Path(tempfile.gettempdir()) / f"scan_monitor_{stem}_{digest}.lock"
+
+
+def _read_lock_pid(lock_path: Path) -> str | None:
+    try:
+        text = lock_path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return None
+    return text or None
+
+
+def probe_instance_lock(config: dict[str, Any], config_path: Path) -> tuple[bool, str | None]:
+    """Return ``(running, pid)`` for an existing monitor of this config/beamline."""
+    if fcntl is None:
+        return False, None
+    lock_path = instance_lock_path(config, config_path)
+    if not lock_path.exists():
+        return False, None
+    with lock_path.open("a+") as fh:
+        try:
+            fcntl.flock(fh.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return True, _read_lock_pid(lock_path)
+        fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
+    return False, None
+
+
+def acquire_instance_lock(config: dict[str, Any], config_path: Path) -> TextIO | None:
+    """Acquire an exclusive lock so a second monitor for this beamline cannot start.
+
+    Holds the lock for the process lifetime by returning the open file handle.
+    Returns None when flock is unavailable (non-Unix).
+    """
+    if fcntl is None:
+        logging.getLogger("scan_monitor").warning(
+            "fcntl unavailable; cannot enforce single-instance lock"
+        )
+        return None
+
+    lock_path = instance_lock_path(config, config_path)
+    fh = lock_path.open("a+")
+    try:
+        fcntl.flock(fh.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        pid = _read_lock_pid(lock_path) or "?"
+        fh.close()
+        raise SystemExit(
+            f"scan_monitor is already running for this beamline "
+            f"(config={config_path.name}, pid={pid}, lock={lock_path}). "
+            f"Stop that process before starting another, or use --check to query."
+        ) from None
+
+    fh.seek(0)
+    fh.truncate()
+    fh.write(f"{os.getpid()}\n")
+    fh.flush()
+    try:
+        os.fsync(fh.fileno())
+    except OSError:
+        pass
+    return fh
 
 
 def trigger_matches(previous: Any, current: Any, rule: dict[str, Any]) -> bool:
@@ -548,24 +641,42 @@ class ScanMonitor:
                 return self.scans[-1].scan_number
         return self._read_scan_number()
 
-    def _scan_active_now(self) -> bool:
-        """True when scan_started PVs indicate a scan is already in progress."""
-        for rule in self.config["scan_started"]:
-            pv = rule["pv"]
-            when = rule.get("when", "changed")
-            expected = rule.get("value")
-            current = self._last_scan_started_values.get(pv)
-            if current is None:
-                try:
-                    current = pv_value(pv)
-                except RuntimeError:
-                    return False
-            if when == "eq":
-                if current != expected:
-                    return False
-            else:
+    def _scan_started_rule_active(
+        self, rule: dict[str, Any], *, allow_caget: bool = True
+    ) -> bool:
+        """True when one scan_started rule currently matches its active condition."""
+        pv = rule["pv"]
+        when = rule.get("when", "changed")
+        expected = rule.get("value")
+        current = self._last_scan_started_values.get(pv)
+        if current is None and allow_caget:
+            try:
+                current = pv_value(pv)
+            except RuntimeError:
                 return False
-        return bool(self.config["scan_started"])
+        if current is None:
+            return False
+        if when == "eq":
+            return current == expected
+        return False
+
+    def _scan_active_now(self) -> bool:
+        """True when any scan_started PV indicates a scan is already in progress."""
+        return any(
+            self._scan_started_rule_active(rule) for rule in self.config["scan_started"]
+        )
+
+    def _other_scan_started_active(self, pvname: str) -> bool:
+        """True when a different scan_started PV is already in its active state.
+
+        Used to ignore inner-loop BUSY edges (e.g. scan1 during a scan2 2D step scan).
+        """
+        for rule in self.config["scan_started"]:
+            if rule["pv"] == pvname:
+                continue
+            if self._scan_started_rule_active(rule, allow_caget=False):
+                return True
+        return False
 
     def _maybe_record_ongoing_scan_at_launch(self) -> None:
         """If a scan is already running when the monitor starts, log it once."""
@@ -866,6 +977,12 @@ class ScanMonitor:
         rules = [r for r in self.config["scan_started"] if r["pv"] == pvname]
         for rule in rules:
             if trigger_matches(previous, value, rule):
+                if self._other_scan_started_active(pvname):
+                    self.logger.debug(
+                        "ignoring nested scan_started on %s (another scan PV already busy)",
+                        pvname,
+                    )
+                    return
                 self.logger.debug(
                     "scan_started trigger matched on %s: %s -> %s",
                     pvname,
@@ -1118,6 +1235,12 @@ def main() -> None:
         action="store_true",
         help="watch events in the live plot only; write no log, CSV, JSONL, or PNG files",
     )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="print whether a monitor for this config/beamline is already running, then exit "
+        "(exit 0 if free, 1 if running)",
+    )
     args = parser.parse_args()
 
     if args.demo:
@@ -1129,6 +1252,18 @@ def main() -> None:
         parser.error("--plot-only cannot be combined with --no-live-plot (nothing would be produced)")
 
     config = load_config(args.config)
+    if args.check:
+        running, pid = probe_instance_lock(config, args.config)
+        if running:
+            print(f"running (pid={pid or '?'})")
+            raise SystemExit(1)
+        print("not running")
+        raise SystemExit(0)
+
+    # Hold for process lifetime; flock is released automatically on exit.
+    global _INSTANCE_LOCK_FH
+    _INSTANCE_LOCK_FH = acquire_instance_lock(config, args.config)
+
     apply_environment_variables(config.get("environment_variables"))
     write_files = not args.plot_only
     try:
@@ -1148,6 +1283,11 @@ def main() -> None:
     )
     if args.plot_only:
         monitor.logger.info("plot-only mode: no files will be written")
+    if _INSTANCE_LOCK_FH is not None:
+        monitor.logger.info(
+            "instance lock acquired (%s)",
+            instance_lock_path(config, args.config),
+        )
     monitor.run()
 
 
